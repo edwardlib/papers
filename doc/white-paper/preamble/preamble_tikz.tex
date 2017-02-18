@@ -1,0 +1,78 @@
+\usepackage{tikz}
+\usetikzlibrary{bayesnet}
+
+\pgfdeclarelayer{edgelayer}
+\pgfdeclarelayer{nodelayer}
+\pgfsetlayers{edgelayer,nodelayer,main}
+
+\definecolor{hexcolor0xbfbfbf}{rgb}{0.749,0.749,0.749}
+
+\tikzset{>=latex}
+\tikzstyle{none}   = [inner sep=0pt]
+\tikzstyle{line}   = [-,
+                      thick,
+                      shorten <=1pt,
+                      shorten >=1pt]
+\tikzstyle{arrow}  = [->,
+                      thick,
+                      shorten <=1pt,
+                      shorten >=1pt]
+\tikzstyle{ardash} = [dashed,
+                      ->,
+                      thick,
+                      shorten <=1pt,
+                      shorten >=1pt]
+
+\tikzstyle{empty}=[
+                   circle,
+                   opacity=0.0,
+                   text opacity=1.0,
+                   inner sep=0pt
+                  ]
+
+\tikzstyle{box}=[
+                 rectangle,
+                 fill=White,
+                 thick,
+                 draw=Black,
+                 inner sep=7pt
+                ]
+
+\tikzstyle{filled}=[
+                    circle,
+                    thick,
+                    fill=hexcolor0xbfbfbf,
+                    draw=Black
+                   ]
+
+\tikzstyle{hollow}=[
+                    circle,
+                    thick,
+                    fill=White,
+                    draw=Black
+                   ]
+
+\tikzstyle{param}=[
+                   rectangle,
+                   fill=Black,
+                   draw=Black,
+                   inner sep=0pt,
+                   minimum width=4pt,
+                   minimum height=4pt
+                  ]
+
+\tikzstyle{paramhollow}=[
+                         rectangle,
+                         thick,
+                         fill=White,
+                         draw=Black,
+                         inner sep=0pt,
+                         minimum
+                         width=4pt,
+                         minimum height=4pt
+                        ]
+
+\usepackage{pgfplots}                               % PGFPLOTS baby!
+\pgfplotsset{compat=newest}
+\pgfplotsset{plot coordinates/math parser=false}
+% \usepgfplotslibrary{statistics}

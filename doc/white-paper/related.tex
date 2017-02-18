@@ -1,0 +1,58 @@
+\subsection*{Related work}
+
+\textbf{Probabilistic programming.}
+There has been much work on programming languages which specify
+broad classes of probabilistic models, or probabilistic
+programs. Recent works include
+Church \citep{goodman2012church},
+Venture \citep{mansinghka2014venture},
+Anglican \citep{wood2015new},
+Stan \citep{carpenter2016stan}, and
+WebPPL \citep{goodman2014design}.
+The most important distinction in Edward stems from motivation. We
+are interested in deploying probabilistic models to many real
+world applications, ranging from the size of data and data structure,
+such as large text corpora or many brief audio signals, to the size of
+model and class of models, such as small nonparametric models or deep
+generative models. Thus Edward is built with fast computation in
+mind.
+
+\textbf{Black box inference.}
+Black box algorithms are typically based on Monte Carlo methods, and
+make very few assumptions about the
+model \citep{metropolis1949monte,hastings1970monte,geman1984stochastic}.
+Our motivation as outlined
+above presents a new set of challenges in both inference research and
+software design. As a first consequence, we focus on variational
+inference \citep{hinton1993keeping,waterhouse1996bayesian,jordan1999introduction}.
+As a second consequence, we encourage active research on
+inference by providing a class hierarchy of inference algorithms. As a
+third consequence, our inference algorithms aim to take advantage of
+as much structure as possible from the model. Edward supports all
+types of inference, whether they
+be black box or model-specific \citep{dempster1977em,hoffman2013stochastic}.
+
+\textbf{Computational frameworks.}
+There are many computational frameworks, primarily built for deep
+learning: as of this date, this includes
+TensorFlow \citep{abadi2016tensorflow},
+Theano \citep{alrfou2016theano},
+Torch \citep{collobert2011torch7},
+neon \citep{nervana2014neon}, and
+the Stan Math Library \citep{carpenter2015stan}.
+These are incredible tools which Edward employs as a backend. In terms
+of abstraction, Edward sits one level higher.
+
+\textbf{High-level deep learning libraries.}
+Neural network libraries such as
+Keras \citep{chollet2015keras} and
+Lasagne \citep{lasagne}
+are at a similar abstraction level as Edward. However both are primarily
+interested in parameterizing complicated functions for supervised
+learning on large datasets. We are interested in probabilistic models
+which apply to a wide array of learning tasks. These tasks may have both
+complicated likelihood and complicated priors (neural networks are an
+option but not a necessity). Therefore our goals are orthogonal and in
+fact mutually beneficial to each other. For example, we use Keras'
+abstraction as a way to easily specify models parameterized by deep
+neural networks.

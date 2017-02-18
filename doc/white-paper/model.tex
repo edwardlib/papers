@@ -1,0 +1,76 @@
+\subsection{Models}
+
+A probabilistic model is a joint distribution $p(\mathbf{x},
+\mathbf{z})$ of data $\mathbf{x}$ and latent variables $\mathbf{z}$.
+
+In Edward, we specify models using a simple language of random variables.
+A random variable $\mathbf{x}$ is an object parameterized by
+tensors $\theta^*$, where
+the number of random variables in one object is determined by
+the dimensions of its parameters.
+
+\begin{lstlisting}[language=Python]
+from edward.models import Normal, Exponential
+
+# univariate normal
+Normal(mu=tf.constant(0.0), sigma=tf.constant(1.0))
+# vector of 5 univariate normals
+Normal(mu=tf.zeros(5), sigma=tf.ones(5))
+# 2 x 3 matrix of Exponentials
+Exponential(lam=tf.ones([2, 3]))
+\end{lstlisting}
+
+For multivariate distributions, the multivariate dimension is the
+innermost (right-most) dimension of the parameters.
+
+\begin{lstlisting}[language=Python]
+from edward.models import Dirichlet, MultivariateNormalFull
+
+# K-dimensional Dirichlet
+Dirichlet(alpha=tf.constant([0.1] * K)
+# vector of 5 K-dimensional multivariate normals
+MultivariateNormalFull(mu=tf.zeros([5, K]), sigma=...)
+# 2 x 5 matrix of K-dimensional multivariate normals
+MultivariateNormalFull(mu=tf.zeros([2, 5, K]), sigma=...)
+\end{lstlisting}
+
+Random variables are equipped with methods such as
+\texttt{log_prob()}, $\log p(\mathbf{x}\mid\theta^*)$,
+\texttt{mean()}, $\mathbb{E}_{p(\mathbf{x}\mid\theta^*)}[\mathbf{x}]$,
+and \texttt{sample()}, $\mathbf{x}^*\sim p(\mathbf{x}\mid\theta^*)$.
+Further, each random variable is associated to a tensor $\mathbf{x}^*$ in the
+computational graph, which represents a single sample $\mathbf{x}^*\sim
+p(\mathbf{x}\mid\theta^*)$.
+
+This makes it easy to parameterize random variables with complex
+deterministic structure, such as with deep neural networks, a diverse
+set of math operations, and compatibility with third party libraries
+which also build on TensorFlow.
+The design also enables compositions of random variables
+to capture complex stochastic structure.
+They operate on $\mathbf{x}^*$.
+
+\begin{figure}[!htb]
+\centering
+\input{tikz/random_variable_graph_computation}
+\caption{Random variables can be combined with other TensorFlow ops.}
+\end{figure}
+
+\begin{lstlisting}[language=Python]
+from edward.models import Normal
+
+x = Normal(mu=tf.zeros(10), sigma=tf.ones(10))
+y = tf.constant(5.0)
+x + y, x - y, x * y, x / y
+tf.tanh(x * y)
+tf.gather(x, 2)  # 3rd normal rv in the vector
+\end{lstlisting}
+
+Below we describe how to build models by composing random variables.
+
+For a list of random variables supported in Edward, see the
+{TensorFlow distributions API}.
+\footnote{\url{https://www.tensorflow.org/versions/master/api_docs/python/contrib.distributions.html}}
+Edward random variables build on top of them, inheriting the same
+arguments and class methods. Additional methods are also available,
+detailed in Edward's API.

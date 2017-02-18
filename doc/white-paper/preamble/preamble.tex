@@ -1,0 +1,118 @@
+% # FONTS
+
+\usepackage[T1]{fontenc}
+\usepackage{tgtermes}
+
+% # MATH
+
+\usepackage{amssymb}
+\newcommand{\mathbold}[1]{\ensuremath{\boldsymbol{\mathbf{#1}}}}
+\usepackage{amsmath}
+
+% # SPACING and TEXT
+
+\usepackage[
+  paper  = letterpaper,
+  left   = 1.50in,
+  right  = 1.50in,
+  top    = 1.0in,
+  bottom = 1.0in,
+  ]{geometry}
+\usepackage[english]{babel}
+\usepackage[parfill]{parskip}
+\usepackage{afterpage}
+\usepackage{enumitem}
+\usepackage{framed}
+\usepackage{xspace}
+
+% # COLOR
+
+\usepackage[usenames,dvipsnames]{xcolor}
+\definecolor{shadecolor}{gray}{0.95}
+
+\newcommand{\red}[1]{\textcolor{BrickRed}{#1}}
+\newcommand{\orange}[1]{\textcolor{BurntOrange}{#1}}
+\newcommand{\green}[1]{\textcolor{OliveGreen}{#1}}
+\newcommand{\blue}[1]{\textcolor{MidnightBlue}{#1}}
+\newcommand{\sky}[1]{\textcolor{SkyBlue}{#1}}
+\newcommand{\gray}[1]{\textcolor{black!60}{#1}}
+
+% # COUNTERS
+
+\renewcommand{\labelenumi}{\color{black!67}{\arabic{enumi}.}}
+\renewcommand{\labelenumii}{{\color{black!67}(\alph{enumii})}}
+\renewcommand{\labelitemi}{{\color{black!67}\textbullet}}
+
+% # FIGURES
+
+\usepackage{graphicx}
+\usepackage[labelfont=bf]{caption}
+\usepackage[format=hang]{subcaption}
+
+% # TABLES
+
+\usepackage{booktabs, array}
+
+% # BIBLIOGRAPHY AND LINKS
+
+\usepackage{natbib}
+
+% # CODE SNIPPETS
+
+\usepackage{listings}
+
+\definecolor{strings}{rgb}{.624,.251,.259}
+\definecolor{keywords}{rgb}{.224,.451,.686}
+\definecolor{comment}{rgb}{.322,.451,.322}
+
+\lstdefinelanguage{python}{
+  morekeywords={from, import, as, for, in, while, def, return, =, +,
+  -, /, *, lambda},
+  keywords=[2]{build_toy_dataset, neural_network, __init__},
+  keywords=[3]{Normal, Bernoulli, Beta, Categorical, Dirichlet,
+  Exponential, MultivariateNormalFull, RandomVariable, Distribution,
+  DirichletProcess, Empirical, PointMass, Gamma,
+  MAP, Inference, KLqp, HMC, SGLD, KLpq,
+  VariationalInference, MonteCarlo, ConjugateInference, GANInference,
+  rnn_cell, dirichlet_process, cond, body,
+  evaluate, ppc, copy, dot, get_session},
+  morecomment=[l]{\#},
+  morecomment=[s]{"""}{"""},
+  morestring=[b]',
+  morestring=[b]",
+  alsoletter={<>=-+/*},
+  sensitive=true
+}
+
+\lstset{
+  language=python,
+  keywordstyle=\color{BrickRed}\bfseries\ttfamily,
+  keywordstyle=[2]\color{Violet}\ttfamily,
+  keywordstyle=[3]\color{keywords}\ttfamily,
+  commentstyle=\color{comment}\ttfamily,
+  stringstyle=\color{strings}\ttfamily,
+  basicstyle=\fontsize{8pt}{8.25pt}\selectfont\ttfamily,
+  basewidth=0.5em,
+  numbers=left,
+  numberstyle=\tiny,
+  stepnumber=1,
+  columns=fixed,
+  xleftmargin=2ex,%0.25in,
+  firstnumber=1,
+  showstringspaces=false,
+  mathescape=true,
+  keepspaces=True,
+  tabsize=2
+}
+\renewcommand{\texttt}[1]{\lstinline[basicstyle=\fontsize{8pt}{8.25pt}\selectfont\ttfamily]{#1}}
+
+\usepackage[colorlinks,linktoc=all, bookmarks=false]{hyperref}
+\usepackage[all]{hypcap}
+\hypersetup{citecolor=MidnightBlue}
+\hypersetup{linkcolor=MidnightBlue}
+\hypersetup{urlcolor=MidnightBlue}
+
+% # ACRONYMS
+
+\usepackage[acronym,smallcaps,nowarn]{glossaries}
+\glsdisablehyper{}

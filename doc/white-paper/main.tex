@@ -1,0 +1,95 @@
+\documentclass{article}
+\input{preamble/preamble}
+\input{preamble/preamble_acronyms}
+\input{preamble/preamble_math}
+\input{preamble/preamble_tikz}
+
+\title{
+Edward: A library for probabilistic modeling,\break inference, and criticism
+}
+
+\author{
+Dustin Tran, Alp Kucukelbir, Adji B.~Dieng,\\
+Maja Rudolph, Dawen Liang, and David M.~Blei\\\\
+Columbia University
+}
+
+\begin{document}
+
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\maketitle
+\begin{abstract}
+  Probabilistic modeling is a powerful approach for analyzing
+  empirical information.
+  We describe \emph{Edward}, a library for probabilistic modeling.
+  Edward's design reflects an iterative process pioneered by George
+  Box: build a model of a phenomenon, make inferences about the model given
+  data, and criticize the model's fit to the data. Edward supports a broad class
+  of probabilistic models, efficient algorithms for inference, and many
+  techniques for model criticism. The library builds on top of
+  TensorFlow to support distributed training and hardware such as
+  GPUs.
+  Edward enables the development of complex probabilistic
+  models and their algorithms at a massive scale.
+\end{abstract}
+
+\emph{Keywords:}
+Probabilistic Models;
+Bayesian Inference;
+Model Criticism;
+Neural Networks;
+Scalable Computation;
+Probabilistic Programming.%
+\footnote{Details in this paper describe Edward version 1.2.1,
+released Jan 30, 2017.}
+
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\thispagestyle{empty}
+\end{titlepage}
+\hypersetup{pageanchor=true}
+
+\glsresetall{}
+
+\clearpage
+
+\input{intro}
+\input{related}
+\clearpage
+\input{getting_started}
+\clearpage
+\input{design}
+\input{data}
+\input{model}
+\input{model_compositionality}
+\input{model_development}
+\input{inference}
+\input{inference_classes}
+\input{inference_compositionality}
+\input{inference_data_subsampling}
+\input{inference_development}
+\input{criticism}
+\input{criticism_point_evaluation}
+\input{criticism_ppc}
+\clearpage
+\input{examples}
+
+\clearpage
+\section{Acknowledgments}
+Edward has benefited enormously from the helpful feedback and advice
+of many individuals: Jaan Altosaar, Eugene Brevdo, Allison Chaney,
+Joshua Dillon, Matthew Hoffman, Kevin Murphy, Rajesh Ranganath, Rif
+Saurous, and other members of the Blei Lab, Google Brain, and Google
+Research.
+This work is supported by NSF IIS-1247664, ONR N00014-11-1-0651,
+DARPA FA8750-14-2-0009, DARPA N66001-15-C-4032, Adobe, Google, NSERC
+PGS-D, and the Sloan Foundation.
+
+\clearpage
+\bibliographystyle{apalike}
+\bibliography{bib}
+
+\end{document}

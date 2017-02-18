@@ -1,0 +1,103 @@
+\section{Introduction}
+\label{sec:intro}
+
+Probabilistic modeling is a powerful approach for analyzing empirical
+information \citep{tukey1962future,newell1976computer,box1976science}.
+Probabilistic models are essential to fields related to its
+methodology, such as
+statistics \citep{friedman2001elements,gelman2013bayesian} and machine
+learning \citep{murphy2012machine,goodfellow2016deep}, as well as
+fields related to its application, such as computational
+biology \citep{friedman2000using}, computational
+neuroscience \citep{dayan2001theoretical}, cognitive
+science \citep{tenenbaum2011grow}, information
+theory \citep{mackay2003information}, and natural language
+processing \citep{manning1999foundations}.
+
+Software systems for probabilistic modeling provide new and faster
+ways of experimentation. This enables research advances in
+probabilistic modeling that could not have been completed before.
+
+As an example of such software systems, we point to early work in
+artificial intelligence.
+Expert systems were designed from human expertise, which in
+turn enabled larger reasoning steps according to existing
+knowledge \citep{buchanan1969heuristic,minsky1975framework}.  With
+connectionist models, the design focused on neuron-like processing
+units, which learn from experience;
+this drove new applications of artificial intelligence
+\citep{hopfield1982neural,rumelhart1988parallel}.
+
+As another example, we point to early work in
+statistical computing, where interest grew broadly out of efficient
+computation for problems in statistical analysis. The S language,
+developed by John Chambers and colleagues at Bell
+Laboratories \citep{becker1984s,chambers1992statistical}, focused on
+an interactive environment for data analysis, with simple yet rich
+syntax to quickly turn ideas into software. It is a
+predecessor to the R language \citep{ihaka1996r}.  More targeted environments
+such as BUGS \citep{spiegelhalter1995bugs},
+which focuses on Bayesian analysis of statistical models, helped launch
+the emerging field of probabilistic programming.
+
+We are motivated to build on these early works in probabilistic
+systems---where in modern applications, new challenges arise in their
+design and implementation.  We highlight two challenges.
+First, statistics and machine learning have made significant advances
+in the methodology of probabilistic models and their inference (e.g.,
+\citet{hoffman2013stochastic,ranganath2014black,rezende2014stochastic}).
+For software systems to enable fast experimentation, we require rich
+abstractions that can capture these advances: it must encompass both a
+broad class of probabilistic models and a broad class of algorithms
+for their efficient inference.
+Second, researchers are increasingly motivated to employ complex
+probabilistic models and at an unprecedented scale of massive
+data \citep{bengio2013representation,ghahramani2015probabilistic,lake2016building}.
+Thus we require an efficient computing environment that supports
+distributed training and integration of hardware such as (multiple)
+GPUs.
+
+We present \emph{Edward}, a probabilistic modeling library named after the
+statistician George Edward Pelham Box. Edward is built around an iterative
+process for probabilistic modeling, pioneered by Box and his collaborators
+\citep{box1962useful,box1965experimental,box1967discrimination,box1976science,
+box1980sampling}. The process is as follows: given data from some unknown
+phenomena, first, formulate a model of the phenomena; second, use an algorithm
+to infer the model's hidden structure, thus reasoning about the phenomena;
+third, criticize how well the model captures the data's generative process. As
+we criticize our model's fit to the data, we revise components of the model and
+repeat to form an iterative
+loop \citep{box1976science,blei2014build,gelman2013bayesian}.
+
+Edward builds infrastructure to enable this loop:
+\begin{enumerate}
+\item
+For \emph{modeling}, Edward provides a language of random variables to
+construct a broad class of models: directed graphical
+models \citep{pearl1988probabilistic}, stochastic neural
+networks \citep{neal1990learning}, and programs with stochastic
+control flow \citep{goodman2012church}.
+\item
+For \emph{inference}, Edward provides algorithms such as stochastic
+and black box variational
+inference \citep{hoffman2013stochastic,ranganath2014black},
+Hamiltonian Monte Carlo \citep{neal1993probabilistic}, and stochastic
+gradient Langevin dynamics \citep{welling2011bayesian}. Edward also
+provides infrastructure to make it easy to develop new algorithms.
+\item
+For \emph{criticism}, Edward provides methods from scoring
+rules \citep{winkler1996scoring} and predictive
+checks \citep{box1980sampling,rubin1984bayesianly}.
+\end{enumerate}
+Edward is built on top of TensorFlow, a library for numerical computing
+using data flow graphs \citep{abadi2016tensorflow}. TensorFlow enables
+Edward to speed up computation with hardware such as GPUs, to scale
+up computation with distributed training, and to simplify engineering
+effort with automatic differentiation.
+
+In Section\nobreakspace \ref {sec:getting-started},
+we demonstrate Edward with an example.
+In Section\nobreakspace \ref {sec:design},
+we describe the design of Edward.
+In Section\nobreakspace \ref {sec:examples},
+we provide examples of how standard tasks in statistics and machine learning can be solved with Edward.
