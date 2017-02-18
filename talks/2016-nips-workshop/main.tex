@@ -1,0 +1,44 @@
+\documentclass[10pt,
+               xcolor={usenames,dvipsnames},
+               hyperref={colorlinks,linktoc=all,citecolor=Plum,linkcolor=MidnightBlue,urlcolor=MidnightBlue},noamssymb]{beamer}
+
+\usepackage[scaled=0.92]{PTSans}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{tikz}
+
+\definecolor{charcoal}{HTML}{222222}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{normal text}{fg=charcoal}
+\setbeamercolor{structure}{fg=charcoal}
+\setbeamertemplate{navigation symbols}{}
+
+\title{}
+\begin{document}
+
+\begin{frame}[plain,t]
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=0.50cm, yshift=-2.25cm, anchor=north west] at (current page.north west) {
+    \begin{tabular}{l}
+    {\Large\bf Deep Probabilistic Programming with Edward}\\[1ex]
+    {\large }\\[2ex]
+    Dustin Tran, Matt Hoffman, Kevin Murphy, \\
+    Eugene Brevdo, Rif Saurous, David Blei \\
+    \end{tabular}
+  };
+  \node [xshift=12.50cm, yshift=1.40cm, anchor=mid east] at (current page.south
+  west) {
+\includegraphics[width=0.9\textwidth]{img/vae_code.png}
+  };
+  \node [xshift=3.00cm, yshift=1.15cm, anchor=mid east] at (current page.south
+  west) {
+\includegraphics[width=0.20\textwidth]{img/vae_graph.png}
+  };
+  \node [xshift=-1.50cm, yshift=4.10cm, anchor=mid east] at (current page.south
+  east) {
+\includegraphics[width=0.25\textwidth]{img/edward.png}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\end{document}
