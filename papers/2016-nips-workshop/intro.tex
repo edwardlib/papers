@@ -1,0 +1,45 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Deep neural networks have become popular in large part due to their
+compositional nature. This lets users mix and match layers in novel
+creative ways, without having to worry about how to perform testing
+(just use forward propagation) or inference (just use a generic
+gradient-based optimizer, combined with back propagation and automatic
+differentiation).
+
+In this paper, we aim to design compositional representations for
+probabilistic programming.
+Most previous work has focused on how to build rich probabilistic
+programs by composing random variables
+\citep{goodman2012church,ghahramani2015probabilistic,lake2016building}.
+Less work has considered an analogous compositionality for inference.
+In fact, most existing \glsreset{PPL}\acrlongpl{PPL} treat the inference
+engine as a black box, abstracted away from the model. Such
+systems cannot capture recent advances in probabilistic modeling such
+as in variational inference
+\citep{kingma2014autoencoding,rezende2015variational,tran2016variational}
+and
+\glsreset{GAN}\acrlongpl{GAN} \citep{goodfellow2014generative}.
+This is because they require reuse of the modeling representation to
+construct rich variational models and discriminative networks
+during inference.
+
+We propose Edward\footnote{%
+Available at \url{http://edwardlib.org}. See \citet{tran2016edward} for
+details of the API. This paper focuses on the algorithmic foundations
+of Edward; a longer version will be on the arXiv shortly.
+}, a new Turing-complete \acrlong{PPL} which builds on
+two compositional representations---random variables and
+inference.
+We show how to integrate our language into existing computational
+graph frameworks such as TensorFlow \citep{abadi2016tensorflow}.
+By leveraging such frameworks, we get distributed training,
+parallelism, vectorisation, and \glsunset{GPU}\gls{GPU} support ``for
+free''.
+We also show how Edward makes it easy to fit the same model using a
+variety of composable inference methods, ranging from point
+estimation, to variational inference, to \acrshort{MCMC}.
+By treating inference as a first class citizen, on a par with
+modeling, we show that probabilistic programming can be as computationally efficient
+and flexible as traditional deep learning.

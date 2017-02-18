@@ -1,0 +1,120 @@
+\section{Compositional Representations for Probabilistic Models}
+\label{sec:modeling_language}
+
+We define random variables as a key compositional representation.
+They are class objects with methods, for example, to compute the log density
+and to sample. Further, each random variable $\mbx$ is associated to a
+tensor $\mbx^*$ in the computational graph, which represents a single
+sample $\mbx^*\sim p(\mbx)$.  This association embeds the random
+variable into the computational graph.
+
+This design is conceptually simple, making it easy to develop
+probabilistic programs in a computational graph framework.
+Importantly, all computation is represented on the graph.  This makes
+it easy to parameterize random variables with complex deterministic
+structure, such as with deep neural networks and a diverse set of math
+operations.  The design also enables compositions of random variables
+to capture complex stochastic structure.
+
+With computational graphs, it is also natural to build mutable states
+within the probabilistic program.  As a typical use of computational
+graphs, such states can define model parameters; in TensorFlow, this
+is given by a \texttt{tf.Variable}.  Another use case is for building
+discriminative models $p(\mby\g\mbx)$, where
+$\mbx$ are features that are input as training or test data.  The
+program can be written independent of the data, using a mutable state
+(\texttt{tf.placeholder}) for $\mbx$ in its graph.
+During training and testing, we feed the placeholder the appropriate
+values.
+In \Cref{appendix:bnn}, we demonstrate this with a Bayesian neural
+network for classification.
+We give other examples below.
+
+
+\subsection{Example: Variational Auto-encoder}
+
+\begin{figure}[tb]
+\begin{subfigure}{0.225\columnwidth}
+  \centering
+  \input{img/vae}
+  \label{sub:vae_math}
+\end{subfigure}%
+\begin{subfigure}{0.65\columnwidth}
+  \centering
+\begin{lstlisting}[language=python]
+# Probabilistic model
+z = Normal(mu=tf.zeros([N, d]), sigma=tf.ones([N, d]))
+h = slim.fully_connected(z, 256)
+x = Bernoulli(logits=slim.fully_connected(h, 28 * 28, activation_fn=None))
+
+# Variational model
+qx = tf.placeholder(tf.float32, [N, 28 * 28])
+qh = slim.fully_connected(qx, 256)
+qz = Normal(mu=slim.fully_connected(qh, d, activation_fn=None),
+            sigma=slim.fully_connected(qh, d, activation_fn=tf.nn.softplus))
+\end{lstlisting}
+  \label{sub:vae_code}
+\end{subfigure}
+\caption{\Acrlong{VAE} for a data set of $28\times 28$ pixel images:
+(left) graphical model, with dotted lines for the inference
+model; (right) probabilistic program,
+with 2-layer neural networks.
+}
+\label{fig:vae}
+\end{figure}
+
+\Cref{fig:vae}
+implements
+a \gls{VAE} \citep{kingma2014autoencoding,rezende2014stochastic} in Edward.
+There are $N$ data points $\{x_n\}$ and $d$ latent
+variables per data point $\{z_n\}$.
+The program uses TensorFlow Slim \citep{guadarrama2016tensorflow}
+to define the neural networks.
+The probabilistic model is parameterized by a 2-layer neural network,
+with 256 hidden units (and ReLU activation), and generates $28\times 28$
+pixel images.  The variational model is parameterized by
+a 2-layer inference network, with 256 hidden units and outputs
+parameters of a normal posterior approximation.
+
+The probabilistic program is concise.  Importantly, core elements of
+the \gls{VAE}---such as its distributional assumptions and neural net
+architectures---are all extensible.
+Model compositionality enables it to be embedded into more complicated
+models \citep{gregor2015draw,rezende2016one} and for other learning
+tasks \citep{kingma2014semi}.
+Inference compositionality (which we discuss later) enables it to be embedded into more
+complicated algorithms, such as with expressive variational
+approximations \citep{rezende2015variational,tran2016variational,kingma2016improving}
+and alternative objectives \citep{ranganath2016operator,li2016variational,dieng2016chi}.
+
+
+\subsection{Stochastic Control Flow and Model Parallelism}
+
+\begin{figure}[!htb]
+  \centering
+  \input{img/dynamic_graph}
+\caption{Computational graph for a probabilistic program with stochastic control flow.
+}
+\label{fig:dynamic}
+\end{figure}
+
+Random variables can also be integrated with control flow,
+enabling probabilistic programs with stochastic control flow.
+%
+Stochastic control flow defines dynamic conditional dependencies,
+known in the literature as contingent or existential dependencies
+\citep{mansinghka2014venture,wu2016swift}.
+See \Cref{fig:dynamic}, where $\mbx$ may or may not depend on $\mba$
+for a given execution.
+
+We use stochastic control flow to implement a Dirichlet process mixture model
+in \Cref{appendix:dirichlet_process}.
+Stochastic control flow produces difficulties for algorithms that leverage the
+graph structure; the relationship of conditional dependencies
+changes across execution traces.
+Importantly, the computational graph provides
+an elegant way of teasing out static conditional dependence structure
+($\mbp$) from dynamic dependence structure ($\mba)$.  We can perform
+model parallelism over the static structure with \glspl{GPU} and batch
+training, and use generic computations to handle the dynamic
+structure.
