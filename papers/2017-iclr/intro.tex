@@ -1,0 +1,57 @@
+\vspace{-1.0ex}
+\section{Introduction}
+\label{sec:introduction}
+\vspace{-0.5ex}
+The nature of deep neural networks is compositional. Users can connect
+layers in creative ways, without having to worry about how to perform
+testing (forward propagation) or inference (gradient-based
+optimization, with back propagation and automatic differentiation).
+
+In this paper, we design compositional representations for
+probabilistic programming.  Probabilistic programming lets users
+specify generative probabilistic models as programs and then
+``compile'' those models down into inference procedures.
+Probabilistic models are also compositional in nature, and much work
+has enabled rich probabilistic programs via compositions of random
+variables
+\citep{goodman2012church,ghahramani2015probabilistic,lake2016building}.
+
+Less work, however, has considered an analogous compositionality for
+inference. Rather, many existing \glsreset{PPL}\acrlongpl{PPL} treat
+the inference engine as a black box, abstracted away from the model.
+These cannot capture probabilistic inferences that
+reuse the model's representation---a key idea in
+recent advances in variational
+inference~\citep{kingma2014autoencoding,rezende2015variational,tran2016variational},
+\glsreset{GAN}\acrlongpl{GAN}~\citep{goodfellow2014generative},
+and also in more classic inferences
+\citep{dayan1995helmholtz,gutmann2010noise}.
+
+We propose Edward\footnote{%
+  See \citet{tran2016edward}
+  for details of the API. A companion webpage for this paper is available at
+  \url{http://edwardlib.org/iclr2017}. It contains more complete
+  examples with runnable code.}, a
+Turing-complete \acrlong{PPL} which builds on two compositional
+representations---one for random variables and one for inference.
+By treating inference as a first class citizen, on a
+par with modeling, we show that probabilistic programming can be as
+flexible and computationally efficient as traditional deep learning.
+For flexibility, we show how Edward makes it easy to fit
+the same model using a variety of composable inference methods,
+ranging from point estimation to variational inference to
+\acrshort{MCMC}.
+For efficiency, we
+show how to integrate Edward into existing computational graph
+frameworks such as TensorFlow \citep{abadi2016tensorflow}.  Frameworks
+like TensorFlow provide computational benefits like distributed
+training, parallelism, vectorization, and \glsunset{GPU}\gls{GPU}
+support ``for free.''
+For example, we show on a benchmark task that Edward's
+\acrlong{HMC} is many times faster than existing software. Further, Edward
+incurs no runtime overhead: it is as fast as handwritten TensorFlow.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

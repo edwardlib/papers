@@ -1,0 +1,73 @@
+\documentclass{article} % For LaTeX2e
+\input{preamble/preamble}
+\usepackage{iclr2017_conference}
+\input{preamble/preamble_acronyms}
+\input{preamble/preamble_math}
+\input{preamble/preamble_tikz}
+
+\setlength{\marginparwidth}{1in} % for margins for sidenotes
+\newcommand{\eat}[1]{}
+
+\title{Deep Probabilistic Programming}
+
+\author{%
+Dustin Tran \\
+Columbia University
+\And
+Matthew D. Hoffman \hspace{-0.7em} \\
+Adobe Research
+\And
+Rif A. Saurous \hspace{8.65em} \\
+Google Research
+\AND
+Eugene Brevdo \\
+Google Brain
+\And
+Kevin Murphy \\
+Google Research
+\And
+David M. Blei \\
+Columbia University
+}
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\iclrfinalcopy
+
+\begin{document}
+
+\maketitle
+
+\input{abstract}
+
+\input{intro}
+\input{related}
+\input{model}
+\input{inference}
+\input{experiments}
+\input{discussion}
+
+\subsubsection*{Acknowledgements}
+We thank the probabilistic programming community---for sharing our
+enthusiasm and motivating further work---including developers of
+Church, Venture, Gamalon, Hakaru, and WebPPL.  We also thank Stan developers
+for providing extensive feedback as we
+developed the language, as well as Thomas Wiecki for experimental
+details.
+We thank the Google BayesFlow team---Joshua Dillon, Ian Langmore,
+Ryan Sepassi, and Srinivas Vasudevan---as well as Amr Ahmed, Matthew
+Johnson, Hung Bui, Rajesh Ranganath, Maja Rudolph, and Francisco Ruiz
+for their helpful feedback.
+This work is supported by NSF IIS-1247664, ONR N00014-11-1-0651,
+DARPA FA8750-14-2-0009, DARPA N66001-15-C-4032, Adobe, Google, NSERC
+PGS-D, and the Sloan Foundation.
+
+\bibliographystyle{iclr2017_conference}
+\bibliography{bib}
+\clearpage
+
+\appendix
+\input{sec_appendix}
+
+\end{document}

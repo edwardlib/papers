@@ -1,0 +1,41 @@
+\section{Related Work}
+\label{sub:related}
+\vspace{-0.5ex}
+
+\Glspl{PPL} typically trade off the expressiveness of the language
+with the computational efficiency of inference.  On one side, there
+are languages which emphasize expressiveness
+\citep{pfeffer2001ibal,milch2005blog,pfeffer2009figaro,goodman2012church},
+representing a rich class beyond graphical models.  Each employs a
+generic inference engine, but scales poorly with respect to model and
+data size.  On the other side, there are languages which emphasize
+efficiency
+\citep{spiegelhalter1995bugs,murphy2001bayes,plummer2003jags,salvatier2015probabilistic,carpenter2016stan}.
+The \gls{PPL} is restricted to a specific class of models, and
+inference algorithms are optimized to be efficient for this class.
+For example, Infer.NET enables fast message passing for graphical
+models \citep{InferNET14}, and Augur enables data parallelism with
+\glspl{GPU} for Gibbs sampling in Bayesian networks
+\citep{tristan2014augur}.  Edward bridges this gap.  It is Turing
+complete---it supports any computable probability distribution---and
+it supports efficient algorithms, such as those that leverage model
+structure and those that scale to massive data.
+
+There has been some prior research on efficient algorithms in
+Turing-complete languages.  Venture and Anglican design inference as
+a collection of local inference problems, defined over program
+fragments \citep{mansinghka2014venture,wood2014new}. This produces
+fast program-specific inference code, which we build on.
+Neither system supports inference methods such as programmable
+posterior approximations, inference models, or data subsampling.
+Concurrent with our work, WebPPL features amortized inference \citep{ritchie2016deep}.
+Unlike Edward, WebPPL does not reuse the model's representation; rather, it annotates the
+original program and leverages helper functions, which is a less
+flexible strategy.  Finally, inference is designed as program
+transformations in
+\citet{kiselyov2009embedded,scibior2015practical,zinkov2016composing}.
+This enables the flexibility of composing inference inside other
+probabilistic programs. Edward builds on this idea to compose not only inference
+within modeling but also modeling within inference (e.g.,
+variational models).
+

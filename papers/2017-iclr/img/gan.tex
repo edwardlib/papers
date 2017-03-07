@@ -1,0 +1,22 @@
+\begin{tikzpicture}
+
+  % Nodes
+  \node[latent] (eps0) {$\mbepsilon_n$};
+  \factor[minimum size=0.3cm, below=1.2cm of eps0] {x} {} {} {};
+
+  \factor[empty, below=of eps0] {h} {} {} {};
+  \factor[right=of h, xshift=0.7cm] {theta} {$\theta$} {} {};
+
+  \node[right=of x, xshift=-0.9cm] (xlabel) {$\mbx_n$};
+
+  % Edges
+  \edge{eps0}{x};
+  \edge{theta}{x};
+
+  % Plates
+  \plate[inner sep=0.4cm, yshift=0.05cm,xshift=0.15cm,
+    label={[xshift=-14pt,yshift=14pt]south east:$N$}] {plate1} {
+    (eps0)(x)
+  } {};
+
+\end{tikzpicture}

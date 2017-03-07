@@ -1,0 +1,184 @@
+\section{Experiments}
+\label{sec:experiments}
+
+In this section, we illustrate two main benefits of Edward:
+flexibility and efficiency. For the former, we
+show how it is easy to compare different inference algorithms on the
+same model. For the latter, we show how it is easy to get significant
+speedups by exploiting computational graphs.
+
+\subsection{Recent Methods in Variational Inference}
+\label{sub:recent}
+
+\begin{table}[tb]
+\centering
+\begin{tabular}{lcc}
+\toprule
+Inference method & Negative log-likelihood
+\\
+\midrule
+\gls{VAE} \citep{kingma2014autoencoding} & $\le$ 88.2 \\
+\gls{VAE} without analytic KL & $\le$ 89.4 \\
+\gls{VAE} with analytic entropy & $\le$ 88.1 \\
+\gls{VAE} with score function gradient & $\le$ 87.9 \\
+Normalizing flows \citep{rezende2015variational} & $\le$ 85.8 \\
+Hierarchical variational model \citep{ranganath2016hierarchical} & $\le$ 85.4 \\
+Importance-weighted auto-encoders ($K=50$) \citep{burda2016importance}
+& $\le$ 86.3 \\
+\acrshort{HVM} with \acrshort{IWAE} objective ($K=5$)
+& $\le$ 85.2 \\
+R\'{e}nyi divergence ($\alpha=-1$) \citep{li2016variational}
+& $\le$ 140.5 \\
+\bottomrule
+\end{tabular}
+\caption{Inference methods for a probabilistic decoder on binarized
+MNIST. The Edward \gls{PPL} is a convenient research platform, making
+it easy to both develop and experiment with many algorithms.}
+\label{table:mnist}
+\end{table}
+
+We demonstrate Edward's flexibility for experimenting with complex
+inference algorithms.
+We consider the \gls{VAE} setup from \Cref{fig:vae} and the binarized
+MNIST data set \citep{salakhutdinov2008quantitative}.  We use $d=50$
+latent variables per data point and optimize using ADAM.  We study
+different components of the \gls{VAE} setup using different methods;
+\Cref{appendix:vae} is a complete script.  After training we evaluate
+held-out log likelihoods, which are lower bounds on the true value.
+
+\Cref{table:mnist} shows the results.  The first method uses the
+\gls{VAE} from \Cref{fig:vae}. The next three methods use the same
+\gls{VAE} but apply different gradient estimators: reparameterization
+gradient without an analytic KL; reparameterization gradient with an
+analytic entropy; and the score function gradient
+\citep{paisely2012variational,ranganath:2014}.  This typically leads
+to the same optima but at different convergence rates. The score
+function gradient was slowest. Gradients with an analytic entropy
+produced difficulties around convergence: we switched to stochastic
+estimates of the entropy as it approached an optima. We also use
+\glspl{HVM} \citep{ranganath2016hierarchical} with a normalizing flow
+prior; it produced similar results as a normalizing flow on the latent
+variable space \citep{rezende2015variational}, and better than
+\glspl{IWAE} \citep{burda2016importance}.
+
+We also study novel combinations, such as \glspl{HVM} with the
+\acrshort{IWAE} objective, \gls{GAN}-based optimization on the
+decoder (with pixel intensity-valued data),
+and R\'{e}nyi divergence on the decoder.  \gls{GAN}-based
+optimization does not enable calculation of the log-likelihood;
+R\'{e}nyi divergence does not directly optimize for log-likelihood so
+it does not perform well. The key point is that
+Edward is a convenient research platform:
+they are all easy modifications of a given script.
+
+
+\subsection{GPU-accelerated Hamiltonian Monte Carlo}
+\label{sub:gpu}
+
+\begin{figure}[!htb]
+\vspace{-1.5ex}
+\begin{subfigure}{0.3\columnwidth}
+  \centering
+  \input{img/logistic_regression}
+\end{subfigure}%
+\begin{subfigure}{0.6\columnwidth}
+  \centering
+\begin{lstlisting}[language=python]
+  # Model
+  x = tf.Variable(x_data, trainable=False)
+  beta = Normal(mu=tf.zeros(D), sigma=tf.ones(D))
+  y = Bernoulli(logits=tf.dot(x, beta))
+
+  # Inference
+  qbeta = Empirical(params=tf.Variable(tf.zeros([T, D])))
+  inference = ed.HMC({beta: qbeta}, data={y: y_data})
+  inference.run(step_size=0.5 / N, n_steps=10)
+\end{lstlisting}
+\end{subfigure}
+\caption{Edward program for Bayesian logistic regression with \gls{HMC}.}
+\label{fig:logistic_regression}
+\vspace{-1.5ex}
+\end{figure}
+
+\begin{table}[tb]
+\centering
+\begin{tabular}{lr}
+\toprule
+Probabilistic programming system & Runtime (s)
+\\
+\midrule
+Handwritten NumPy (1 CPU) & 534 \\
+Stan (1 CPU) \citep{carpenter2016stan} & 171 \\
+PyMC3 (12 CPU) \citep{salvatier2015probabilistic} & 30.0 \\
+\textbf{Edward (12 CPU)} & \textbf{8.2} \\
+Handwritten TensorFlow (GPU) & 5.0 \\
+\textbf{Edward (GPU)} & \textbf{4.9}\\
+\bottomrule
+\end{tabular}
+\caption{\gls{HMC} benchmark for large-scale logistic regression.
+Edward (GPU) is significantly faster than other systems. In addition,
+Edward has no overhead: it is as fast as handwritten TensorFlow.}
+\label{table:hmc}
+\end{table}
+
+We benchmark runtimes for
+a fixed number of Hamiltonian Monte Carlo \citep[\gls{HMC};][]{neal2011mcmc}
+iterations on modern
+hardware: a 12-core Intel i7-5930K CPU
+at 3.50GHz and an NVIDIA Titan X (Maxwell) GPU. We apply
+logistic regression on the
+Covertype dataset ($N=581012$, $D=54$; responses were
+binarized)
+using Edward,
+Stan (with PyStan) \citep{carpenter2016stan}, and PyMC3
+\citep{salvatier2015probabilistic}.
+We ran 100 \gls{HMC} iterations,
+with 10 leapfrog updates per iteration, a step size of $0.5 / N$, and
+single precision.
+\Cref{fig:logistic_regression} illustrates the program in Edward.
+
+\Cref{table:hmc} displays the runtimes.%
+\footnote{In a previous version of this paper, we reported PyMC3 took 361s. This was
+caused by a bug preventing PyMC3 from correctly handling
+single-precision floating point. (PyMC3 with double precision is roughly 14x slower than Edward (GPU).) This has been fixed
+after discussion with Thomas Wiecki. The reported numbers also
+exclude compilation time, which is significant for Stan.}
+Edward (GPU) features a dramatic 35x speedup over Stan
+(1 CPU) and 6x speedup over PyMC3 (12 CPU).
+This showcases the value of building a \gls{PPL} on top of
+computational graphs.
+The speedup stems from fast matrix multiplication
+when calculating the model's log-likelihood; GPUs can efficiently
+parallelize this computation.
+We expect similar speedups for models whose bottleneck is also matrix multiplication, such as deep neural networks.
+
+There are various reasons for the speedup. Stan only used 1
+CPU as it leverages multiple cores by running \gls{HMC} chains in
+parallel. Stan also used double-precision floating point as it
+does not allow single-precision. For PyMC3, we note Edward's speedup is
+not a result of PyMC3's Theano backend compared to Edward's
+TensorFlow. Rather, PyMC3 does not use Theano for all its
+computation, so it experiences communication overhead with NumPy.
+(PyMC3 was actually slower when using the GPU.)
+We predict that porting Edward's design to Theano would feature
+similar speedups.
+
+In addition to these speedups, we highlight that Edward has no runtime
+overhead: it is as fast as handwritten TensorFlow.  Following
+\Cref{sub:inference}, this is because the computational graphs for
+inference are in fact the same for Edward and the handwritten code.
+
+\subsection{Probability Zoo}
+
+In addition to Edward, we also release the \emph{Probability Zoo}, a
+community repository for pre-trained probability models and their
+posteriors.\footnote{%
+  The Probability Zoo is available at \url{http://edwardlib.org/zoo}.
+  It includes model parameters and inferred posterior factors, such as
+  local and global variables during training and any inference
+  networks.  } It is inspired by the model zoo in Caffe
+\citep{jia2014caffe}, which provides many pre-trained discriminative
+neural networks, and which has been key to making large-scale deep learning
+more transparent and accessible. It is also inspired by Forest
+\citep{stuhlmueller2012forest}, which provides examples of
+probabilistic programs.

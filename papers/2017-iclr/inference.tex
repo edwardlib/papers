@@ -1,0 +1,345 @@
+\section{Compositional Representations for Inference}
+\label{sec:inference}
+
+We described random variables as a representation for building
+rich probabilistic programs over computational graphs.  We now
+describe a compositional representation for inference.
+We desire two criteria: (a) support for many classes of
+inference, where the form of the inferred posterior depends on the
+algorithm; and (b) invariance of inference under the computational
+graph, that is, the posterior can be further composed as part of
+another model.
+
+To explain our approach, we will use a simple hierarchical model as a
+running example. \Cref{fig:hierarchical_model_example} displays a
+joint distribution $p(\mbx, \mbz, \beta)$ of data $\mbx$, local
+variables $\mbz$, and global variables $\beta$. The ideas here extend
+to more expressive programs.
+
+\begin{figure}[!h]
+\begin{subfigure}{0.35\columnwidth}
+  \centering
+  \input{img/hierarchical_model_full}
+\end{subfigure}%
+\begin{subfigure}{0.6\columnwidth}
+  \centering
+\begin{lstlisting}[language=python]
+N = 10000  # number of data points
+D = 2  # data dimension
+K = 5  # number of clusters
+
+beta = Normal(mu=tf.zeros([K, D]), sigma=tf.ones([K, D]))
+z = Categorical(logits=tf.zeros([N, K]))
+x = Normal(mu=tf.gather(beta, z), sigma=tf.ones([N, D]))
+\end{lstlisting}
+\end{subfigure}
+\caption{Hierarchical model: \textbf{(left)} graphical model; \textbf{(right)}
+  probabilistic program. It is a mixture of Gaussians over
+  $D$-dimensional data $\{x_n\}\in\mathbb{R}^{N\times D}$. There are
+  $K$ latent cluster means $\beta\in\mathbb{R}^{K\times D}$.}
+\label{fig:hierarchical_model_example}
+\end{figure}
+
+\subsection{Inference as Stochastic Graph Optimization}
+\label{sub:inference}
+
+The goal of inference is to
+calculate the posterior distribution
+$p(\mathbf{z}, \beta\mid \mathbf{x}_{\text{train}}; \mbtheta)$
+given data $\mbx_{\text{train}}$,
+where
+$\mbtheta$ are any model parameters that we will compute point estimates
+for.\footnote{%
+For example, we could replace \texttt{x}'s \texttt{sigma}
+argument with \texttt{tf.exp(tf.Variable(0.0))*tf.ones([N, D])}. This
+defines a model parameter initialized at 0 and positive-constrained.}
+We formalize this as the following optimization problem:
+\begin{align}
+  \label{eq:inference-optimization}
+\min_{\mblambda,\mbtheta}
+\mathcal{L}(
+p(\mathbf{z}, \beta\mid \mathbf{x}_{\text{train}}; \mbtheta),~
+q(\mathbf{z}, \beta; \mblambda)
+),
+\end{align}
+where $q(\mathbf{z}, \beta; \mblambda)$ is an approximation to the
+posterior $p(\mathbf{z}, \beta\g \mbx_{\text{train}};\mbtheta)$, and
+$\mathcal{L}$ is a loss function with respect to $p$ and $q$.
+
+The choice of approximation $q$, loss $\mathcal{L}$, and rules to update
+parameters $\{\mbtheta,\mblambda\}$ are specified by an inference algorithm.
+(Note $q$ can be nonparametric, such as a point or a collection of
+samples.)
+
+In Edward, we write this problem as follows:
+
+\begin{lstlisting}[language=python]
+inference = ed.Inference({beta: qbeta, z: qz}, data={x: x_train})
+\end{lstlisting}
+
+\texttt{Inference} is an abstract class which takes two inputs.  The
+first is a collection of latent random variables \texttt{beta} and
+\texttt{z}, associated to their ``posterior variables'' \texttt{qbeta} and
+\texttt{qz} respectively. The second is a collection of observed random variables
+\texttt{x}, which is associated to their realizations \texttt{x_train}.
+
+The idea is that \texttt{Inference} defines and
+solves the optimization in \Cref{eq:inference-optimization}. It
+adjusts parameters of the distribution of \texttt{qbeta}
+and \texttt{qz} (and any model parameters) to be close to the
+posterior.
+
+Class methods are available to finely control the inference. Calling
+\texttt{inference.initialize()} builds a computational graph to update
+$\{\mbtheta,\mblambda\}$. Calling \texttt{inference.update()} runs
+this computation once to update $\{\mbtheta,\mblambda\}$; we call the
+method in a loop until convergence. Importantly, no efficiency is lost
+in Edward's language: the computational graph is the same as if it
+were handwritten for a
+specific model. This means the runtime is the same; also see our
+experiments in \Cref{sub:gpu}.
+
+A key concept in Edward is that there is no distinct ``model''
+or ``inference'' block. A model is simply a collection of random
+variables, and inference is a way of modifying parameters in that
+collection subject to another. This reductionism offers
+significant flexibility. For example, we can
+infer only parts of a model (e.g.,
+layer-wise training \citep{hinton2006fast}),
+infer parts used in multiple models
+(e.g., multi-task learning), or
+plug in a posterior into a new model
+(e.g., Bayesian updating).
+
+\subsection{Classes of Inference}
+
+The design of \texttt{Inference} is very general.  We describe
+subclasses to represent many algorithms below: variational inference,
+Monte Carlo, and \acrlongpl{GAN}.
+
+Variational inference posits a family of approximating distributions
+and finds the closest member in the family to the posterior
+\citep{jordan1999introduction}.  In Edward, we build the variational
+family in the graph; see \Cref{fig:inference} (left). For our running
+example, the
+family has mutable variables as parameters
+$\mblambda=\{\pi,\mu,\sigma\}$, where
+$q(\beta;\mu,\sigma) = \operatorname{Normal}(\beta; \mu,\sigma)$ and
+$q(\mbz;\pi) = \operatorname{Categorical}(\mbz;\pi)$.
+
+\begin{figure}[!h]
+\begin{subfigure}{0.5\columnwidth}
+  \centering
+\begin{lstlisting}[language=Python]
+qbeta = Normal(
+  mu=tf.Variable(tf.zeros([K, D])),
+  sigma=tf.exp(tf.Variable(tf.zeros([K, D]))))
+qz = Categorical(
+  logits=tf.Variable(tf.zeros([N, K])))
+
+inference = ed.VariationalInference(
+  {beta: qbeta, z: qz}, data={x: x_train})
+\end{lstlisting}
+\end{subfigure}%
+\begin{subfigure}{0.5\columnwidth}
+  \centering
+\begin{lstlisting}[language=Python]
+T = 10000  # number of samples
+qbeta = Empirical(
+  params=tf.Variable(tf.zeros([T, K, D])))
+qz = Empirical(
+  params=tf.Variable(tf.zeros([T, N])))
+
+inference = ed.MonteCarlo(
+  {beta: qbeta, z: qz}, data={x: x_train})
+\end{lstlisting}
+\end{subfigure}
+\caption{\textbf{(left)} Variational inference. \textbf{(right)} Monte Carlo.}
+\label{fig:inference}
+\end{figure}
+
+Specific variational algorithms inherit from the
+\texttt{VariationalInference} class.  Each defines its own methods,
+such as a loss function and gradient.
+For example, we represent
+\gls{MAP}
+estimation with an approximating family (\texttt{qbeta} and
+\texttt{qz}) of \texttt{PointMass} random variables, i.e., with all
+probability mass concentrated at a point.
+\texttt{MAP} inherits from \texttt{VariationalInference} and defines
+the negative log joint density as the loss function; it uses existing optimizers inside
+TensorFlow.
+In \Cref{sub:recent}, we experiment with multiple gradient estimators
+for black box variational inference \citep{ranganath:2014}. Each
+estimator implements the same loss (an objective proportional to
+the divergence $\operatorname{KL}(q\gg p)$) and a different update rule
+(stochastic gradient).
+
+Monte Carlo approximates the posterior using samples
+\citep{robert1999monte}. Monte Carlo is an inference where the
+approximating family is an empirical distribution,
+$q(\beta; \{\beta^{(t)}\}) = \frac{1}{T}\sum_{t=1}^T \delta(\beta,
+\beta^{(t)})$ and
+$q(\mbz; \{\mbz^{(t)}\}) = \frac{1}{T}\sum_{t=1}^T \delta(\mbz,
+\mbz^{(t)})$. The parameters are
+$\mblambda=\{\beta^{(t)},\mbz^{(t)}\}$.  See \Cref{fig:inference}
+(right).
+Monte Carlo algorithms proceed by updating one sample
+$\beta^{(t)},\mbz^{(t)}$ at a time in the empirical approximation.
+Specific \glsunset{MC}\gls{MC} samplers determine the update rules:
+they can use gradients such as in Hamiltonian Monte Carlo
+\citep{neal2011mcmc} and graph
+structure such as in sequential Monte Carlo \citep{doucet2001introduction}.
+
+
+
+\begin{figure}[tb]
+\begin{subfigure}{0.4\columnwidth}
+  \centering
+  \input{img/gan}
+\end{subfigure}%
+\begin{subfigure}{0.6\columnwidth}
+  \centering
+\begin{lstlisting}[language=python]
+def generative_network(eps):
+  h = Dense(256, activation='relu')(eps)
+  return Dense(28 * 28, activation=None)(h)
+
+def discriminative_network(x):
+  h = Dense(28 * 28, activation='relu')(x)
+  return Dense(h, activation=None)(1)
+
+# Probabilistic model
+eps = Normal(mu=tf.zeros([N, d]), sigma=tf.ones([N, d]))
+x = generative_network(eps)
+
+inference = ed.GANInference(data={x: x_train},
+    discriminator=discriminative_network)
+\end{lstlisting}
+\end{subfigure}
+\caption{\Acrlongpl{GAN}:
+\textbf{(left)} graphical model; \textbf{(right)} probabilistic program.
+The model (generator) uses a parameterized function (discriminator)
+for training.
+}
+\label{fig:gan}
+\end{figure}
+
+Edward also supports non-Bayesian methods such as \glspl{GAN}
+\citep{goodfellow2014generative}.
+See \Cref{fig:gan}.
+The model posits
+random noise \texttt{eps} over $N$ data points, each with $d$
+dimensions; this random noise feeds into a
+\texttt{generative_network} function, a neural network that outputs
+real-valued data \texttt{x}.
+In addition, there is a \texttt{discriminative_network}
+which takes data as input and outputs the probability that
+the data is real (in logit parameterization). We build
+\texttt{GANInference}; running it optimizes parameters inside the two
+neural network functions. This approach extends to many advances in
+\glspl{GAN} (e.g., \citet{denton2015deep,li2015generative}).
+
+Finally, one can design algorithms that would otherwise require tedious
+algebraic manipulation. With symbolic algebra on nodes of the
+computational graph, we can uncover conjugacy relationships between
+random variables. Users can then integrate out variables to
+automatically derive classical Gibbs \citep{gelfand1990sampling},
+mean-field updates \citep{bishop2006pattern}, and exact inference.
+These algorithms are being currently developed in Edward.
+
+\subsection{Composing Inferences}
+
+Core to Edward's design is that inference can be written as a collection
+of separate inference programs. Below we demonstrate variational EM,
+with an (approximate) E-step over local variables and an M-step over
+global variables. We instantiate two algorithms, each of which
+conditions on inferences from the other, and
+we alternate with one update of each \citep{neal1993new},
+\begin{lstlisting}[language=Python]
+qbeta = PointMass(params=tf.Variable(tf.zeros([K, D])))
+qz = Categorical(logits=tf.Variable(tf.zeros([N, K])))
+
+inference_e = ed.VariationalInference({z: qz}, data={x: x_train, beta: qbeta})
+inference_m = ed.MAP({beta: qbeta}, data={x: x_train, z: qz})
+...
+for _ in range(10000):
+  inference_e.update()
+  inference_m.update()
+\end{lstlisting}
+This extends to many other cases such as
+exact EM for exponential families,
+contrastive divergence \citep{hinton2002training},
+pseudo-marginal methods \citep{andrieu2009pseudo},
+and Gibbs sampling within variational inference
+\citep{wang2012truncation,Hoffman:2015}.
+We can also write message passing algorithms, which solve a collection
+of local inference problems \citep{koller2009probabilistic}.  For
+example, classical message passing uses exact local inference and
+expectation propagation locally minimizes the Kullback-Leibler
+divergence, $\text{KL}(p\gg q)$
+\citep{minka2001expectation}.
+
+\subsection{Data Subsampling}
+\label{sub:batch_training}
+
+Stochastic optimization \citep{bottou2010large} scales inference to
+massive data and is key to
+algorithms such as stochastic gradient Langevin dynamics
+\citep{welling2011bayesian} and stochastic variational inference
+\citep{hoffman2013stochastic}.  The idea is to cheaply estimate the
+model's log joint density in an unbiased way.  At each step, one
+subsamples a data set $\{x_m\}$ of size $M$ and then scales densities
+with respect to local variables,
+\begin{align*}
+  \log p(\mbx, \mbz, \beta)
+  & = \log p(\beta) +
+  \sum_{n=1}^N\Big[\log p(x_n \g z_n, \beta) + \log p(z_n \g \beta)\Big]
+  \\
+  & \approx \log p(\beta) +
+  \frac{N}{M}\sum_{m=1}^M\Big[\log p(x_m \g z_m, \beta) + \log p(z_m \g \beta)\Big].
+\end{align*}
+To support stochastic optimization, we represent only a subgraph of
+the full model. This prevents reifying the full model, which can lead
+to unreasonable memory consumption \citep{tristan2014augur}.  During
+initialization, we pass in a dictionary to properly scale the
+arguments. See \Cref{fig:hierachical_model_batch}.
+
+\begin{figure}[!htb]
+\begin{subfigure}{0.3\columnwidth}
+  \centering
+  \input{img/hierarchical_model}
+  \label{sub:hierachical_model_math}
+\end{subfigure}%
+\begin{subfigure}{0.6\columnwidth}
+  \centering
+\begin{lstlisting}[language=python]
+beta = Normal(mu=tf.zeros([K, D]), sigma=tf.ones([K, D]))
+z = Categorical(logits=tf.zeros([M, K]))
+x = Normal(mu=tf.gather(beta, z), sigma=tf.ones([M, D]))
+
+qbeta = Normal(mu=tf.Variable(tf.zeros([K, D])),
+               sigma=tf.nn.softplus(tf.Variable(tf.zeros([K, D]))))
+qz = Categorical(logits=tf.Variable(tf.zeros([M, D])))
+
+inference = ed.VariationalInference({beta: qbeta, z: qz}, data={x: x_batch})
+inference.initialize(scale={x: float(N)/M, z: float(N)/M})
+\end{lstlisting}
+  \label{sub:hierarchical_model_code}
+\end{subfigure}
+\caption{Data subsampling with a hierarchical model. We define a
+subgraph of the full model, forming a plate of size $M$
+rather than $N$. We then scale all local random variables by $N/M$.}
+\label{fig:hierachical_model_batch}
+\end{figure}
+
+Conceptually, the scale argument represents scaling for each random
+variable's plate, as if we had seen that random variable $N / M$ as
+many times.  As an example, \Cref{appendix:svi} shows how to implement
+stochastic variational inference in Edward.
+The approach extends naturally to streaming data
+\citep{doucet2000on,broderick2013streaming,mcinerney2015population},
+dynamic batch sizes, and data structures in which working on a
+subgraph does not immediately apply
+\citep{binder1997space,johnson2014stochastic,foti2014stochastic}.
+

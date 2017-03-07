@@ -1,0 +1,36 @@
+\section{Discussion: Challenges \& Extensions}
+\label{sec:discussion}
+
+We described Edward, a
+Turing-complete \gls{PPL}
+with compositional representations for probabilistic models and
+inference.
+Edward expands the scope of probabilistic programming to be as
+flexible and
+computationally efficient as traditional deep learning.
+For flexibility, we showed how Edward can
+use a variety of composable inference methods,
+capture recent advances in
+variational inference and \acrlongpl{GAN}, and
+finely control the inference algorithms.
+For efficiency, we showed how Edward leverages computational graphs to
+achieve fast, parallelizable computation, scales to massive data, and
+incurs no runtime overhead over handwritten code.
+
+In present work, we are applying Edward as a research platform
+for developing new probabilistic models
+\citep{rudolph2016exponential,tran2017deep} and new
+inference algorithms \citep{dieng2016chi}.
+As with any language design, Edward makes tradeoffs in pursuit
+of its flexibility and speed for research. For
+example, an open challenge in Edward is to better facilitate programs
+with complex control flow and recursion. While possible to represent,
+it is unknown how to enable their flexible inference strategies. In
+addition, it is open how to expand Edward's design to dynamic
+computational graph frameworks---which provide more flexibility in
+their programming paradigm---but may sacrifice performance. A crucial
+next step for probabilistic programming is to leverage dynamic
+computational graphs while maintaining the flexibility and
+efficiency that Edward offers.
+
+

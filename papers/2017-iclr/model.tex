@@ -1,0 +1,226 @@
+\vspace{-0.5ex}
+\section{Compositional Representations for Probabilistic Models}
+\label{sec:modeling_language}
+\vspace{-0.5ex}
+
+We first develop compositional representations for probabilistic
+models. We desire two criteria: (a) integration with computational
+graphs, an efficient
+framework where nodes represent operations on data and edges
+represent data communicated between them
+\citep{culler1986dataflow}; and (b)
+invariance of the representation under the graph, that is, the
+representation can be
+reused during inference.
+
+Edward defines random variables as the key compositional representation.
+They are class objects with methods, for example, to compute the log
+density and to sample. Further, each random variable $\mbx$ is
+associated to a tensor (multi-dimensional array) $\mbx^*$, which
+represents a single sample $\mbx^*\sim p(\mbx)$. This association
+embeds the random variable onto a computational graph on tensors.
+
+The design's simplicity makes it easy to develop probabilistic programs in a
+computational graph framework. Importantly, all computation is
+represented on the graph. This enables one to compose random
+variables with complex deterministic structure such as deep neural
+networks, a diverse set of math operations, and third party libraries
+that build on the same framework. The design also enables compositions
+of random variables to capture complex stochastic structure.
+
+As an illustration, we use a Beta-Bernoulli model,
+$p(\mbx, \theta) = \operatorname{Beta}(\theta\g 1, 1) \prod_{n=1}^{50}
+\operatorname{Bernoulli}(x_n\g \theta)$, where $\theta$ is a latent
+probability shared across the 50 data points $\mbx\in\{0,1\}^{50}$.
+The random variable \texttt{x} is 50-dimensional, parameterized by the
+random tensor $\theta^*$. Fetching the object \texttt{x} runs the
+graph: it simulates from the generative process and outputs a binary
+vector of $50$ elements.
+
+\begin{figure}[!htb]
+\begin{subfigure}{0.3\columnwidth}
+  \centering
+\begin{lstlisting}[language=python]
+theta = Beta(a=1.0, b=1.0)
+x = Bernoulli(p=tf.ones(50) * theta)
+\end{lstlisting}
+\end{subfigure}%
+\begin{subfigure}{0.65\columnwidth}
+  \centering
+  \input{img/beta_bernoulli_graph}
+\end{subfigure}
+\caption{Beta-Bernoulli program \textbf{(left)} alongside its
+computational graph \textbf{(right)}.
+Fetching $\mbx$ from the graph generates a binary vector of $50$ elements.
+}
+\label{fig:beta_bernoulli}
+\end{figure}
+
+All computation is registered symbolically on random variables and not
+over their execution. Symbolic representations
+do not require reifying the full model, which leads to unreasonable
+memory consumption for large models \citep{tristan2014augur}.
+Moreover, it enables us to simplify both deterministic and stochastic
+operations in the graph, before executing any code
+\citep{scibior2015practical,zinkov2016composing}.
+
+With computational graphs, it is also natural to build mutable states
+within the probabilistic program. As a typical use of computational
+graphs, such states can define model parameters; in TensorFlow, this
+is given by a \texttt{tf.Variable}. Another use case is for building
+discriminative models $p(\mby\g\mbx)$, where $\mbx$ are features that
+are input as training or test data. The program can be written
+independent of the data, using a mutable state
+(\texttt{tf.placeholder}) for $\mbx$ in its graph. During training
+and testing, we feed the placeholder the appropriate values.
+
+In \Cref{appendix:model}, we provide examples of a Bayesian neural
+network for classification (\ref{appendix:bnn}), latent Dirichlet
+allocation (\ref{appendix:lda}), and Gaussian matrix factorization
+(\ref{appendix:gaussian_mf}). We present others below.
+
+\subsection{Example: Variational Auto-encoder}
+\label{sub:vae}
+
+\begin{figure}[tb]
+\begin{subfigure}{0.225\columnwidth}
+  \centering
+  \input{img/vae}
+  \label{sub:vae_math}
+\end{subfigure}%
+\begin{subfigure}{0.65\columnwidth}
+  \centering
+\begin{lstlisting}[language=python]
+# Probabilistic model
+z = Normal(mu=tf.zeros([N, d]), sigma=tf.ones([N, d]))
+h = Dense(256, activation='relu')(z)
+x = Bernoulli(logits=Dense(28 * 28, activation=None)(h))
+
+# Variational model
+qx = tf.placeholder(tf.float32, [N, 28 * 28])
+qh = Dense(256, activation='relu')(qx)
+qz = Normal(mu=Dense(d, activation=None)(qh),
+            sigma=Dense(d, activation='softplus')(qh))
+\end{lstlisting}
+  \label{sub:vae_code}
+\end{subfigure}
+\caption{\Acrlong{VAE} for a data set of $28\times 28$ pixel images:
+\textbf{(left)} graphical model, with dotted lines for the inference
+model; \textbf{(right)} probabilistic program,
+with 2-layer neural networks.
+}
+\label{fig:vae}
+\end{figure}
+
+\Cref{fig:vae} implements a \gls{VAE}
+\citep{kingma2014autoencoding,rezende2014stochastic} in Edward. It
+comprises a probabilistic model over data and a variational model
+designed to approximate the former's posterior.
+Here we use random variables to construct both
+the probabilistic model and the variational model; they are fit
+during inference (more details in \Cref{sec:inference}).
+
+There are $N$ data points $x_n\in\{0,1\}^{28\cdot 28}$ each with
+$d$ latent variables, $z_n\in\mathbb{R}^d$. The program uses Keras
+\citep{chollet2015keras} to define neural networks. The
+probabilistic model is parameterized by a 2-layer neural network, with
+256 hidden units (and ReLU activation), and generates
+$28\times 28$ pixel images. The variational model is parameterized by
+a 2-layer inference network, with 256 hidden units and
+outputs parameters of a normal posterior approximation.
+
+The probabilistic program is concise. Core elements of the
+\gls{VAE}---such as its distributional assumptions and neural net
+architectures---are all extensible. With model compositionality, we
+can embed it into more complicated models
+\citep{gregor2015draw,rezende2016one} and for other learning tasks
+\citep{kingma2014semi}. With inference compositionality (which we
+discuss in \Cref{sec:inference}), we can embed it into more complicated algorithms, such
+as with expressive variational approximations
+\citep{rezende2015variational,tran2016variational,kingma2016improving}
+and alternative objectives
+\citep{ranganath2016operator,li2016variational,dieng2016chi}.
+
+\subsection{\hspace{-0.225em}Example: Bayesian Recurrent Neural Network with Variable Length}
+
+Random variables can also be composed with control flow operations.
+As an example, \Cref{fig:bayesian_rnn} implements a Bayesian \glsreset{RNN}\gls{RNN} with
+variable length.
+The data is a sequence of inputs $\{\mbx_1,\ldots,\mbx_T\}$ and
+outputs $\{y_1,\ldots,y_T\}$ of length $T$ with
+$\mbx_t\in\mathbb{R}^{D}$ and $y_t\in\mathbb{R}$ per time step.
+For $t=1,\ldots,T$,
+a \gls{RNN} applies the update
+\begin{equation*}
+  \mbh_t = \operatorname{tanh}(\mbW_h \mbh_{t-1} + \mbW_x \mbx_t + \mbb_h),
+\end{equation*}
+where the previous hidden state is
+$\mbh_{t-1}\in\mathbb{R}^H$.
+We feed each hidden state into the output's likelihood,
+$y_t \sim \operatorname{Normal}(\mbW_y \mbh_t + \mbb_y, 1)$, and
+we place a standard normal prior over all parameters
+$\{\mbW_h\in\mathbb{R}^{H\times H}, \mbW_x\in\mathbb{R}^{D\times H},
+\mbW_y\in\mathbb{R}^{H\times 1},
+\mbb_h\in\mathbb{R}^H,\mbb_y\in\mathbb{R}\}$. Our implementation is
+dynamic: it differs from a \gls{RNN} with fixed length, which
+pads and unrolls the computation.
+
+\begin{figure}[tb]
+\begin{subfigure}{0.35\columnwidth}
+  \centering
+  \input{img/bayesian_rnn}
+\end{subfigure}%
+\begin{subfigure}{0.6\columnwidth}
+\begin{lstlisting}[language=python]
+def rnn_cell(hprev, xt):
+  return tf.tanh(tf.dot(hprev, Wh) + tf.dot(xt, Wx) + bh)
+
+Wh = Normal(mu=tf.zeros([H, H]), sigma=tf.ones([H, H]))
+Wx = Normal(mu=tf.zeros([D, H]), sigma=tf.ones([D, H]))
+Wy = Normal(mu=tf.zeros([H, 1]), sigma=tf.ones([H, 1]))
+bh = Normal(mu=tf.zeros(H), sigma=tf.ones(H))
+by = Normal(mu=tf.zeros(1), sigma=tf.ones(1))
+
+x = tf.placeholder(tf.float32, [None, D])
+h = tf.scan(rnn_cell, x, initializer=tf.zeros(H))
+y = Normal(mu=tf.matmul(h, Wy) + by, sigma=1.0)
+\end{lstlisting}
+\end{subfigure}
+\caption{Bayesian \glsunset{RNN}\gls{RNN}: \textbf{(left)} graphical model;
+  \textbf{(right)} probabilistic program. The program has an unspecified number
+  of time steps; it uses a symbolic for loop (\texttt{tf.scan}). }
+\label{fig:bayesian_rnn}
+\end{figure}
+
+\subsection{Stochastic Control Flow and Model Parallelism}
+
+\begin{figure}[!htb]
+  \centering
+  \input{img/dynamic_graph}
+\caption{Computational graph for a probabilistic program with stochastic control flow.
+}
+\label{fig:dynamic}
+\end{figure}
+
+Random variables can also be placed in the control flow itself,
+enabling probabilistic programs with stochastic control flow.
+Stochastic control flow defines dynamic conditional dependencies,
+known in the literature as contingent or existential dependencies
+\citep{mansinghka2014venture,wu2016swift}. See \Cref{fig:dynamic},
+where $\mbx$ may or may not depend on $\mba$ for a given execution.
+In \Cref{appendix:dirichlet_process}, we use stochastic control flow
+to implement a Dirichlet process mixture model.
+Tensors with stochastic shape are also possible: for
+example, \texttt{tf.zeros(Poisson(lam=5.0))} defines a vector of zeros
+with length given by a Poisson draw with rate $5.0$.
+
+Stochastic control flow produces difficulties for algorithms that use
+the graph structure because the relationship of conditional
+dependencies changes across execution traces. The computational
+graph, however, provides an elegant way of teasing out static
+conditional dependence structure ($\mbp$) from dynamic dependence
+structure ($\mba)$. We can perform model parallelism (parallel
+computation across components of the model) over the static structure
+with \glspl{GPU} and batch training. We can use more generic
+computations to handle the dynamic structure.
+
