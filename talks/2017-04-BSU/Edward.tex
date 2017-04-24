@@ -98,6 +98,46 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
 \inputminted{python}{beta-bernoulli.py}
 \end{frame}
 
+\begin{frame}[fragile]
+  \begin{block}{Model code}
+    \begin{minted}{python}
+      p = Beta(a=1.0, b=1.0)
+      x = Bernoulli(p=tf.ones(10) * p)
+    \end{minted}
+  \end{block}
+  The random variables $p$ and $x$ are represented by tensors $p^*$ and $x^*$ in the tensorflow computation graph
+  \begin{block}{Computation graph}
+    \begin{center}
+      \input{tikz/beta_bernoulli_graph}
+    \end{center}
+  \end{block}
+  Random variables are equipped with methods for likelihoods $\log(x|p)$,
+  expectations $\mathbb{E}_{p(x|p)}[x]$, and sampling $\sim p(x|p)$.
+
+  Graph can be executed by \mintinline{python}|x.value()| which returns the tensor $x^*$ and simulates the
+  generative process.
+\end{frame}
+
+\begin{frame}[fragile]
+  Key concept is compositionality:
+  \begin{itemize}
+    \item Graphs can contain arbitrary tensorflow constructs
+    \item Tensorflow conditional evaluations permit construction of nonparametric processes
+    \item Graphs can interface with third party tensorflow libraries, e.g. Keras for
+      deep learning
+  \end{itemize}
+  \begin{block}{Deep generative model}
+    \begin{minted}{python}
+      from edward.models import Bernoulli, Normal
+      from keras.layers import Dense
+
+      z = Normal(mu=tf.zeros([N, d]), sigma=tf.ones([N, d]))
+      h = Dense(256, activation='relu')(z.value())
+      x = Bernoulli(logits=Dense(28 * 28)(h))
+    \end{minted}
+  \end{block}
+\end{frame}
+
 \begin{frame}[allowframebreaks]%in case more than 1 slide needed
 \setbeamertemplate{bibliography item}[text]
 \bibliographystyle{apalike}

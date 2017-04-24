@@ -1,0 +1,22 @@
+\begin{tikzpicture}
+
+  % Nodes
+  \node[latent]               (U)      {$\mbU_{m}$} ;
+  \node[obs, right=0.3cm of U, yshift=-1.5cm] (Y)    {$\mbY_{n,m}$} ;
+  \node[latent, right=1.5cm of U] (V)    {$\mbV_{n}$} ;
+
+  % Edges
+  \edge{U}{Y};
+  \edge{V}{Y};
+
+  % Plates
+  \plate[inner sep=0.1cm,yshift=-0.05cm,xshift=-0.05cm,
+    label={[xshift=17pt,yshift=14pt]south west:$M$}] {plate1} {
+    (U)(Y)
+  } {};
+  \plate[inner sep=0.1cm,yshift=0.1cm,
+    label={[xshift=-15pt,yshift=13pt]south east:$N$}] {plate2} {
+    (V)(Y)
+  } {};
+
+\end{tikzpicture}
