@@ -61,7 +61,7 @@ An iterative process for science:
 \end{tikzpicture} \\
 \vspace{20pt}
 Edward is a library designed around this loop. \\
-\citep{box_science_1976-1,box_sampling_1980-1}
+\citep{box_science_1976-1, box_sampling_1980-1, david_m._blei_build_2014}
 \end{frame}
 
 
@@ -98,5 +98,10 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
 \inputminted{python}{beta-bernoulli.py}
 \end{frame}
 
-
+\begin{frame}[allowframebreaks]%in case more than 1 slide needed
+\setbeamertemplate{bibliography item}[text]
+\bibliographystyle{apalike}
+\renewcommand*{\bibfont}{\small}
+\printbibliography
+\end{frame}
 \end{document}
