@@ -1,0 +1,102 @@
+\documentclass[10pt]{beamer}
+\input{preamble/preamble}
+\input{preamble/preamble_acronyms}
+\input{preamble/preamble_math}
+\input{preamble/preamble_tikz}
+
+\usetheme{simple}
+
+\addbibresource{2017-04-Edward.bib}
+
+% Watermark background (simple theme)
+% \setwatermark{\includegraphics[height=8cm]{img/Heckert_GNU_white.png}}
+
+
+\title{Probabilistic programming with Edward}
+% \subtitle{}
+\date{April 25, 2017}
+\author{John Reid}
+\institute{Biostatistics Unit, \\ School of Clinical Medicine, \\ Cambridge University}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\frametitle{George E.P. Box (1919 - 2013)}
+\begin{columns}
+\begin{column}{0.4\textwidth}
+    \begin{center}
+     \includegraphics[width=\columnwidth]{img/box.jpg}
+     \end{center}
+\end{column}
+\begin{column}{0.6\textwidth}
+An iterative process for science:
+\\[1ex]
+\begin{enumerate}
+\item Build a model of the science
+\\[1ex]
+\item Infer the model given data
+\\[1ex]
+\item Criticize the model given data
+\end{enumerate}
+\end{column}
+\end{columns}
+\cite{box_useful_1962-1, box_experimental_1965-1, box_discrimination_1967-1, box_science_1976-1, box_sampling_1980-1}
+\end{frame}
+
+\begin{frame}
+\frametitle{Box's Loop}
+\center
+\begin{tikzpicture}[remember picture]
+  \node [block] (Infer) {Infer};
+  \coordinate[below of=Infer] (under);
+  \node [block, left=of Infer] (Model) {Model};
+  \draw [->, thick] (Model) -- (Infer);
+  \node [block, right=of Infer] (Criticise) {Criticise};
+  \draw [->, thick] (Infer) -- (Criticise);
+  \draw [->, thick, rounded corners] (Criticise) -- (under) -- (Model);
+  \node [block, above=of Infer, fill=blue!20] (Data) {Data};
+  \draw [->, thick] (Data) -- (Infer);
+\end{tikzpicture} \\
+\vspace{20pt}
+Edward is a library designed around this loop. \\
+\citep{box_science_1976-1,box_sampling_1980-1}
+\end{frame}
+
+
+\begin{frame}
+\vspace{3ex}
+\textbf{Edward} is a probabilistic programming language,
+designed for fast experimentation and research~\citep{tran_deep_2017}.
+
+\emph{Modelling}
+\begin{itemize}
+\item Composable Turing-complete language of random variables.
+\item Examples: Graphical models, neural networks, probabilistic programs.
+\item Many data types, tensor vectorization, broadcasting, 3rd party support.
+\end{itemize}
+
+\emph{Inference}
+\begin{itemize}
+\item Composable language for hybrids, message passing, data subsampling.
+\item Examples: Black box VI, Hamiltonian MC, stochastic gradient MCMC,
+  generative adversarial networks.
+\item Infrastructure to develop your own algorithms.
+\end{itemize}
+
+\emph{Criticism}
+\begin{itemize}
+\item Examples: Scoring rules, hypothesis tests, predictive checks.
+\end{itemize}
+
+\vspace{1ex}
+Built on TensorFlow (features distributed computing, GPUs, autodiff).
+\end{frame}
+
+\begin{frame}[fragile]
+\inputminted{python}{beta-bernoulli.py}
+\end{frame}
+
+
+\end{document}
