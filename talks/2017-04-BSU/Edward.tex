@@ -60,7 +60,7 @@ An iterative process for science:
   \draw [->, thick] (Data) -- (Infer);
 \end{tikzpicture} \\
 \vspace{20pt}
-Edward is a library designed around this loop. \\
+Edward is a library designed around this loop \\
 \citep{box_science_1976-1, box_sampling_1980-1, david_m._blei_build_2014}
 \end{frame}
 
@@ -78,30 +78,30 @@ designed for fast experimentation and research~\citep{tran_deep_2017}.
 
 \emph{Modelling}
 \begin{itemize}
-\item Composable Turing-complete language of random variables.
-\item Examples: Graphical models, neural networks, probabilistic programs.
-\item Many data types, tensor vectorization, broadcasting, 3rd party support.
+\item Composable Turing-complete language of random variables
+\item Examples: Graphical models, neural networks, probabilistic programs
+\item Many data types, tensor vectorization, broadcasting, 3rd party support
 \end{itemize}
 
 \emph{Inference}
 \begin{itemize}
-\item Composable language for hybrids, message passing, data subsampling.
+\item Composable language for hybrids, message passing, data subsampling
 \item Examples: Black box VI, Hamiltonian MC, stochastic gradient MCMC,
-  generative adversarial networks.
-\item Infrastructure to develop your own algorithms.
+  generative adversarial networks
+\item Infrastructure to develop your own algorithms
 \end{itemize}
 
 \emph{Criticism}
 \begin{itemize}
-\item Examples: Scoring rules, hypothesis tests, predictive checks.
+\item Examples: Scoring rules, hypothesis tests, predictive checks
 \end{itemize}
 
 \vspace{1ex}
-Built on TensorFlow (features distributed computing, GPUs, autodiff).
+Built on TensorFlow (features distributed computing, GPUs, autodiff)
 \end{frame}
 
 \begin{frame}[fragile]
-\inputminted{python}{python/beta-bernoulli.py}
+  \inputminted{python}{python/beta-bernoulli.py}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -111,7 +111,7 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
       x = Bernoulli(p=tf.ones(10) * p)
     \end{minted}
   \end{block}
-  The random variables $p$ and $x$ are represented by tensors $p^*$ and $x^*$ in the tensorflow computational graph
+  The random variables $p$ and $x$ are represented by tensors $p^*$ and $\mbx^*$ in the tensorflow computational graph
   \begin{block}{Computational graph}
     \begin{center}
       \input{tikz/beta_bernoulli_graph}
@@ -120,7 +120,7 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
   Random variables are equipped with methods for likelihoods $\log(x|p)$,
   expectations $\mathbb{E}_{p(x|p)}[x]$, and sampling $\sim p(x|p)$.
 
-  Graph can be executed by \mintinline{python}|x.value()| which returns the tensor $x^*$ and simulates the
+  Graph can be executed by \mintinline{python}|x.value()| which returns the tensor $\mbx^*$ and simulates the
   generative process.
 \end{frame}
 
@@ -133,7 +133,7 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
     \item Tensorflow conditional evaluations permit nonparametric processes
     \item Interface with third party tensorflow libraries, e.g. Keras for deep learning
   \end{itemize}
-  \begin{block}{Deep generative model}
+  \begin{block}{Generative model}
     \begin{minted}{python}
       from edward.models import Bernoulli, Normal
       from keras.layers import Dense
@@ -174,11 +174,88 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
 \begin{frame}
   \frametitle{MNIST variational auto-encoder}
   \includegraphics[width=\textwidth]{img/edward-vae.png}
+
+  \begin{block}{Inference}
+    \inputminted{python}{python/vae-inference.py}
+  \end{block}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Semi-supervised learning}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \includegraphics[width=\textwidth]{img/mnist-digits-small}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        Model M2 from~\cite{kingma_semi-supervised_2014}
+        \begin{align*}
+          y &\sim \textnormal{Cat}(y|\pi) \\
+          \mbz &\sim \mathcal{N}(0, I) \\
+          \mbx|y, \mbz &\sim f(\mbx; y, \mbz, \theta)
+        \end{align*}
+        55,000 binarized images, $\mbx$ \\
+        3,000 have associated labels, $y$ \\
+        $f$ is a deconvolutional network \\
+        with a Bernoulli likelihood
+      \end{center}
+    \end{column}
+  \end{columns}
+  \begin{block}{Variational distribution}
+    \begin{align*}
+      q_\phi(y|\mbx) &= \textnormal{Cat}(\mbpi_\phi(\mbx)) \\
+      q_\phi(\mbz|y, \mbx) &= \mathcal{N}(\mbmu_\phi(y, \mbx), \textnormal{diag}(\mbsigma^2_\phi(\mbx)))
+    \end{align*}
+  \end{block}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Semi-supervised learning}
+
+  Loss for labelled samples
+  \begin{align*}
+    \mathcal{L}(\mbx,y) &=
+      - \mathbb{E}_{q_\phi(\mbz|y, \mbx)}[
+        \log p_\theta(\mbx|y, \mbz)
+        + \log p_\theta(y)
+        + \log p(\mbz)
+        - \log q_\phi(\mbz|y, \mbx)]
+  \end{align*}
+
+  Loss for unlabelled samples
+  \begin{align*}
+    \mathcal{U}(\mbx,y) &=
+      \sum_y q_\phi(y|\mbx) \mathcal{L}(\mbx, y)
+      - \mathcal{H}(q_\phi(y|x))
+  \end{align*}
+
+  KL-divergence and entropy are analytic
+
+  \begin{block}{Reparameterisation trick}
+    \includegraphics[width=\textwidth]{img/reparameterisation-trick}
+  \end{block}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Semi-supervised learning}
+  \includegraphics[width=\textwidth]{img/semi-M2-072}
+
+  $\mbx$ sampled from generative model
+
+  Each row has fixed $y$
+
+  $\mbz$ varies across columns
 \end{frame}
 
 
 \begin{frame}
-%  \includegraphics[width=\textwidth]{img/edward-GPU-speed.png}
 \frametitle{GPU-accelerated Hamiltonian Monte Carlo}
 \begin{tabular}{cc}
 \hspace{-1em}
@@ -188,7 +265,7 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
 \end{tabular}
 \vspace{1ex}
 
-Bayesian logistic regression for the Covertype dataset ($N=581012$, $D=54$) \\
+Bayesian logistic regression for the Covertype dataset ($N=581012, D=54$) \\
 12-core Intel i7-5930K CPU at 3.50GHz and a NVIDIA Titan X (Maxwell) GPU \\
 100 iterations of HMC
 \vspace{1ex}
@@ -211,53 +288,7 @@ PyMC3 (12 CPU) & 361 sec \\
 \end{frame}
 
 
-
-\begin{frame}
-  \frametitle{Semi-supervised learning}
-
-  \begin{columns}
-    \begin{column}{0.4\textwidth}
-      \includegraphics[width=\textwidth]{img/mnist-digits-small}
-    \end{column}
-    \begin{column}{0.6\textwidth}
-      \begin{center}
-        Model M2 from~\cite{kingma_semi-supervised_2014}
-        \begin{align*}
-          y &\sim \textnormal{Cat}(y|\pi) \\
-          \mbz &\sim \mathcal{N}(0, I) \\
-          \mbx|y, \mbz &\sim f(\mbx; y, \mbz, \theta)
-        \end{align*}
-        55,000 images, $\mbx$ \\
-        3,000 have associated labels, $y$ \\
-        $f$ is a deconvolutional network
-      \end{center}
-    \end{column}
-
-  \end{columns}
-\end{frame}
-
-
-
-\begin{frame}
-  \frametitle{Semi-supervised learning}
-
-  posterior samples
-\end{frame}
-
-
-
-\begin{frame}
-  \frametitle{}
-\end{frame}
-
-
-
-\begin{frame}
-  \frametitle{}
-\end{frame}
-
-
-\begin{frame}[noframenumbering, allowframebreaks]  % in case more than 1 slide needed
+\begin{frame}[allowframebreaks]  % in case more than 1 slide needed
   %\frametitle{References}
   \setbeamertemplate{bibliography item}[text]
   %\bibliographystyle{apalike}
