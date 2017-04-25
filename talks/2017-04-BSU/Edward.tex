@@ -42,7 +42,7 @@ An iterative process for science:
 \end{enumerate}
 \end{column}
 \end{columns}
-\cite{box_useful_1962-1, box_experimental_1965-1, box_discrimination_1967-1, box_science_1976-1, box_sampling_1980-1}
+\citep{box_useful_1962-1, box_experimental_1965-1, box_discrimination_1967-1, box_science_1976-1, box_sampling_1980-1}
 \end{frame}
 
 \begin{frame}
@@ -161,14 +161,13 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
     \label{eq:inference-optimization}
     \min_{\mblambda,\mbtheta}
     \mathcal{L}(
-      p(\mathbf{z}, \beta\mid \mathbf{x}_{\text{train}}; \mbtheta),~
-      q(\mathbf{z}, \beta; \mblambda)
-    ),
+      p(\mathbf{z} \mid \mathbf{x}; \mbtheta),
+      q(\mathbf{z} ; \mbphi)
+    )
   \end{align*}
   where $q$ can be a variational distribution, point estimate or collection of samples.
 
-  The loss for the optimisation problem is represented in the same computational graph as the model.
-
+  The loss for the optimisation problem is encoded in the same computational graph as the model.
 \end{frame}
 
 
@@ -187,10 +186,12 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
 &
 \includegraphics[width=7cm]{img/logistic_code.png}
 \end{tabular}
+\vspace{1ex}
 
-Bayesian logistic regression for the Covertype dataset ($N=581012$, $D=54$).
-12-core Intel i7-5930K CPU at 3.50GHz and a NVIDIA Titan X (Maxwell) GPU.  100
-iterations of HMC with same settings.
+Bayesian logistic regression for the Covertype dataset ($N=581012$, $D=54$) \\
+12-core Intel i7-5930K CPU at 3.50GHz and a NVIDIA Titan X (Maxwell) GPU \\
+100 iterations of HMC
+\vspace{1ex}
 
 \begin{table}[tb]
 \centering
@@ -210,8 +211,54 @@ PyMC3 (12 CPU) & 361 sec \\
 \end{frame}
 
 
-\begin{frame}[allowframebreaks]%in case more than 1 slide needed
-  \frametitle{References}
+
+\begin{frame}
+  \frametitle{Semi-supervised learning}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \includegraphics[width=\textwidth]{img/mnist-digits-small}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        Model M2 from~\cite{kingma_semi-supervised_2014}
+        \begin{align*}
+          y &\sim \textnormal{Cat}(y|\pi) \\
+          \mbz &\sim \mathcal{N}(0, I) \\
+          \mbx|y, \mbz &\sim f(\mbx; y, \mbz, \theta)
+        \end{align*}
+        55,000 images, $\mbx$ \\
+        3,000 have associated labels, $y$ \\
+        $f$ is a deconvolutional network
+      \end{center}
+    \end{column}
+
+  \end{columns}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Semi-supervised learning}
+
+  posterior samples
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{}
+\end{frame}
+
+
+\begin{frame}[noframenumbering, allowframebreaks]  % in case more than 1 slide needed
+  %\frametitle{References}
   \setbeamertemplate{bibliography item}[text]
   %\bibliographystyle{apalike}
   \renewcommand*{\bibfont}{\small}
