@@ -48,17 +48,7 @@ An iterative process for science:
 \begin{frame}
 \frametitle{Box's Loop}
 \center
-\begin{tikzpicture}[remember picture]
-  \node [block] (Infer) {Infer};
-  \coordinate[below of=Infer] (under);
-  \node [block, left=of Infer] (Model) {Model};
-  \draw [->, thick] (Model) -- (Infer);
-  \node [block, right=of Infer] (Criticise) {Criticise};
-  \draw [->, thick] (Infer) -- (Criticise);
-  \draw [->, thick, rounded corners] (Criticise) -- (under) -- (Model);
-  \node [block, above=of Infer, fill=blue!20] (Data) {Data};
-  \draw [->, thick] (Data) -- (Infer);
-\end{tikzpicture} \\
+\input{tikz/boxs-loop} \\
 \vspace{20pt}
 Edward is a library designed around this loop \\
 \citep{box_science_1976-1, box_sampling_1980-1, david_m._blei_build_2014}
@@ -121,8 +111,24 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff)
 
 \begin{frame}[fragile]
   \frametitle{Tensorflow}
-  \includegraphics[width=\textwidth]{img/tensorflow}
-  \footnote{https://www.slideshare.net/IsraelBlancas1/tensorflow-la-ia-detrs-de-google}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      \begin{align*}
+        h_i = \textnormal{ReLU}(\mbW \mbx + \mbb)
+      \end{align*} \\
+      $\mbx$ is a placeholder for data
+      \vspace{10pt}
+
+      $\mbW, \mbb$ are variables to store parameters across graph evaluations
+      \vspace{10pt}
+
+      MatMul, Add, and ReLU are operations
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \input{tikz/tensorflow}
+    \end{column}
+  \end{columns}
+  % \footnote{https://www.slideshare.net/IsraelBlancas1/tensorflow-la-ia-detrs-de-google}
 \end{frame}
 
 
@@ -174,7 +180,14 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff)
 
 \begin{frame}
   \frametitle{MNIST variational auto-encoder}
-  \includegraphics[width=\textwidth]{img/edward-vae.png}
+  \begin{columns}
+    \begin{column}{0.2\textwidth}
+      \input{tikz/vae}
+    \end{column}
+    \begin{column}{0.8\textwidth}
+      \inputminted[fontsize=\small]{python}{python/mnist-vae.py}
+    \end{column}
+  \end{columns}
 
   \begin{block}{Inference}
     \inputminted{python}{python/vae-inference.py}
@@ -249,10 +262,15 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff)
       - \mathcal{H}(q_\phi(y|x))
   \end{align*}
 
-  KL-divergence and entropy are analytic
+  Gradients of KL-divergence and entropy are analytic
 
   \begin{block}{Reparameterisation trick}
-    \includegraphics[width=\textwidth]{img/reparameterisation-trick}
+    \begin{align*}
+      \nabla_{\{\theta,\phi\}}\mathbb{E}_{q_\phi(\mbz|\mbx)}[\log p_\theta(\mbx|\mbz)]
+      =
+      \mathbb{E}_{\mathcal{N}(\mbepsilon|\mbzero, \mbI)}[
+      \nabla_{\{\theta,\phi\}} \log p_\theta(\mbx|\mbmu_\phi(\mbx) + \mbsigma_\phi(\mbx) \odot \mbepsilon)]
+    \end{align*}
   \end{block}
 \end{frame}
 
@@ -272,12 +290,15 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff)
 
 \begin{frame}
 \frametitle{GPU-accelerated Hamiltonian Monte Carlo}
-\begin{tabular}{cc}
-\hspace{-1em}
-\includegraphics[width=2.5cm]{img/logistic_graph.png}
-&
-\includegraphics[width=7cm]{img/logistic_code.png}
-\end{tabular}
+\vspace{1ex}
+\begin{columns}
+  \begin{column}{0.25\textwidth}
+    \input{tikz/logistic_regression}
+  \end{column}
+  \begin{column}{0.75\textwidth}
+    \inputminted[fontsize=\scriptsize]{python}{python/bayesian_logistic_regression.py}
+  \end{column}
+\end{columns}
 \vspace{1ex}
 
 Bayesian logistic regression for the Covertype dataset ($N=581012, D=54$) \\
