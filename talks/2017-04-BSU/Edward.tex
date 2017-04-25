@@ -66,6 +66,12 @@ Edward is a library designed around this loop. \\
 
 
 \begin{frame}
+  \frametitle{Model comparisons}
+  \includegraphics[width=\textwidth]{img/edward-lls.png}
+\end{frame}
+
+
+\begin{frame}
 \vspace{3ex}
 \textbf{Edward} is a probabilistic programming language,
 designed for fast experimentation and research~\citep{tran_deep_2017}.
@@ -95,7 +101,7 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
 \end{frame}
 
 \begin{frame}[fragile]
-\inputminted{python}{beta-bernoulli.py}
+\inputminted{python}{python/beta-bernoulli.py}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -105,8 +111,8 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
       x = Bernoulli(p=tf.ones(10) * p)
     \end{minted}
   \end{block}
-  The random variables $p$ and $x$ are represented by tensors $p^*$ and $x^*$ in the tensorflow computation graph
-  \begin{block}{Computation graph}
+  The random variables $p$ and $x$ are represented by tensors $p^*$ and $x^*$ in the tensorflow computational graph
+  \begin{block}{Computational graph}
     \begin{center}
       \input{tikz/beta_bernoulli_graph}
     \end{center}
@@ -118,13 +124,14 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
   generative process.
 \end{frame}
 
+
 \begin{frame}[fragile]
+  \frametitle{Model construction}
   Key concept is compositionality:
   \begin{itemize}
-    \item Graphs can contain arbitrary tensorflow constructs
-    \item Tensorflow conditional evaluations permit construction of nonparametric processes
-    \item Graphs can interface with third party tensorflow libraries, e.g. Keras for
-      deep learning
+    \item Computational graphs can contain arbitrary tensorflow constructs
+    \item Tensorflow conditional evaluations permit nonparametric processes
+    \item Interface with third party tensorflow libraries, e.g. Keras for deep learning
   \end{itemize}
   \begin{block}{Deep generative model}
     \begin{minted}{python}
@@ -138,10 +145,76 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff).
   \end{block}
 \end{frame}
 
+
+\begin{frame}
+  \frametitle{Inference abstraction}
+  Edward's random variables can represent probabilistic models as computational graphs.
+
+  How to perform inference? We desire:
+  \begin{itemize}
+    \item Support for many inference classes
+    \item The posterior can be further composed as part of a larger model
+  \end{itemize}
+
+  Edward abstracts this as an optimisation problem
+  \begin{align*}
+    \label{eq:inference-optimization}
+    \min_{\mblambda,\mbtheta}
+    \mathcal{L}(
+      p(\mathbf{z}, \beta\mid \mathbf{x}_{\text{train}}; \mbtheta),~
+      q(\mathbf{z}, \beta; \mblambda)
+    ),
+  \end{align*}
+  where $q$ can be a variational distribution, point estimate or collection of samples.
+
+  The loss for the optimisation problem is represented in the same computational graph as the model.
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{MNIST variational auto-encoder}
+  \includegraphics[width=\textwidth]{img/edward-vae.png}
+\end{frame}
+
+
+\begin{frame}
+%  \includegraphics[width=\textwidth]{img/edward-GPU-speed.png}
+\frametitle{GPU-accelerated Hamiltonian Monte Carlo}
+\begin{tabular}{cc}
+\hspace{-1em}
+\includegraphics[width=2.5cm]{img/logistic_graph.png}
+&
+\includegraphics[width=7cm]{img/logistic_code.png}
+\end{tabular}
+
+Bayesian logistic regression for the Covertype dataset ($N=581012$, $D=54$).
+12-core Intel i7-5930K CPU at 3.50GHz and a NVIDIA Titan X (Maxwell) GPU.  100
+iterations of HMC with same settings.
+
+\begin{table}[tb]
+\centering
+\begin{tabular}{ll}
+\toprule
+Probabilistic programming language & Runtime
+\\
+\midrule
+Stan (1 CPU) & 171 sec \\
+PyMC3 (12 CPU) & 361 sec \\
+\textbf{Edward (12 CPU)} & \textbf{8.2 sec} \\
+\textbf{Edward (GPU)} & \textbf{4.9 sec} (35x faster than Stan)\\
+\bottomrule
+\end{tabular}
+\end{table}
+\citep{carpenter_stan_2017, salvatier_probabilistic_2015}
+\end{frame}
+
+
 \begin{frame}[allowframebreaks]%in case more than 1 slide needed
-\setbeamertemplate{bibliography item}[text]
-\bibliographystyle{apalike}
-\renewcommand*{\bibfont}{\small}
-\printbibliography
+  \frametitle{References}
+  \setbeamertemplate{bibliography item}[text]
+  %\bibliographystyle{apalike}
+  \renewcommand*{\bibfont}{\small}
+  \printbibliography
 \end{frame}
 \end{document}
