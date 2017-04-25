@@ -66,12 +66,6 @@ Edward is a library designed around this loop \\
 
 
 \begin{frame}
-  \frametitle{Model comparisons}
-  \includegraphics[width=\textwidth]{img/edward-lls.png}
-\end{frame}
-
-
-\begin{frame}
 \vspace{3ex}
 \textbf{Edward} is a probabilistic programming language,
 designed for fast experimentation and research~\citep{tran_deep_2017}.
@@ -187,6 +181,20 @@ Built on TensorFlow (features distributed computing, GPUs, autodiff)
   \end{block}
 \end{frame}
 
+
+\begin{frame}
+  \frametitle{Criticism}
+  \begin{block}{}
+    \inputminted[fontsize=\scriptsize]{python}{python/beta-bernoulli.py}
+  \end{block}
+  \mintinline{python}|ed.copy()|: conditioning as graph manipulation
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Model comparisons}
+  \includegraphics[width=\textwidth]{img/edward-lls.png}
+\end{frame}
 
 
 \begin{frame}
