@@ -1,0 +1,11 @@
+\begin{tikzpicture}[remember picture]
+  \node [block] (Infer) {Infer};
+  \coordinate[below of=Infer] (under);
+  \node [block, left=of Infer] (Model) {Model};
+  \draw [->, thick] (Model) -- (Infer);
+  \node [block, right=of Infer] (Criticise) {Criticise};
+  \draw [->, thick] (Infer) -- (Criticise);
+  \draw [->, thick, rounded corners] (Criticise) -- (under) -- (Model);
+  \node [block, above=of Infer, fill=blue!20] (Data) {Data};
+  \draw [->, thick] (Data) -- (Infer);
+\end{tikzpicture}

@@ -1,0 +1,334 @@
+\documentclass[10pt]{beamer}
+\input{preamble/preamble}
+\input{preamble/preamble_acronyms}
+\input{preamble/preamble_math}
+\input{preamble/preamble_tikz}
+
+\usetheme{simple}
+
+\addbibresource{2017-04-Edward.bib}
+
+% Watermark background (simple theme)
+% \setwatermark{\includegraphics[height=8cm]{img/Heckert_GNU_white.png}}
+
+
+\title{Probabilistic programming with Edward}
+% \subtitle{}
+\date{April 25, 2017}
+\author{John Reid}
+\institute{Biostatistics Unit, \\ School of Clinical Medicine, \\ Cambridge University}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\frametitle{George E.P. Box (1919 - 2013)}
+\begin{columns}
+\begin{column}{0.4\textwidth}
+    \begin{center}
+     \includegraphics[width=\columnwidth]{img/box.jpg}
+     \end{center}
+\end{column}
+\begin{column}{0.6\textwidth}
+An iterative process for science:
+\\[1ex]
+\begin{enumerate}
+\item Build a model of the science
+\\[1ex]
+\item Infer the model given data
+\\[1ex]
+\item Criticize the model given data
+\end{enumerate}
+\end{column}
+\end{columns}
+\citep{box_useful_1962-1, box_experimental_1965-1, box_discrimination_1967-1, box_science_1976-1, box_sampling_1980-1}
+\end{frame}
+
+\begin{frame}
+\frametitle{Box's Loop}
+\center
+\input{tikz/boxs-loop} \\
+\vspace{20pt}
+Edward is a library designed around this loop \\
+\citep{box_science_1976-1, box_sampling_1980-1, david_m._blei_build_2014}
+\end{frame}
+
+
+\begin{frame}
+\vspace{3ex}
+\textbf{Edward} is a probabilistic programming language,
+designed for fast experimentation and research~\citep{tran_deep_2017}.
+
+\emph{Modelling}
+\begin{itemize}
+\item Composable Turing-complete language of random variables
+\item Examples: Graphical models, neural networks, probabilistic programs
+\item Many data types, tensor vectorization, broadcasting, 3rd party support
+\end{itemize}
+
+\emph{Inference}
+\begin{itemize}
+\item Composable language for hybrids, message passing, data subsampling
+\item Examples: Black box VI, Hamiltonian MC, stochastic gradient MCMC,
+  generative adversarial networks
+\item Infrastructure to develop your own algorithms
+\end{itemize}
+
+\emph{Criticism}
+\begin{itemize}
+\item Examples: Scoring rules, hypothesis tests, predictive checks
+\end{itemize}
+
+\vspace{1ex}
+Built on TensorFlow (features distributed computing, GPUs, autodiff)
+\end{frame}
+
+\begin{frame}[fragile]
+  \inputminted{python}{python/beta-bernoulli.py}
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{block}{Model code}
+    \begin{minted}{python}
+      p = Beta(a=1.0, b=1.0)
+      x = Bernoulli(p=tf.ones(10) * p)
+    \end{minted}
+  \end{block}
+  The random variables $p$ and $x$ are represented by tensors $p^*$ and $\mbx^*$ in the tensorflow computational graph
+  \begin{block}{Computational graph}
+    \begin{center}
+      \input{tikz/beta_bernoulli_graph}
+    \end{center}
+  \end{block}
+  Random variables are equipped with methods for likelihoods $\log(x|p)$,
+  expectations $\mathbb{E}_{p(x|p)}[x]$, and sampling $\sim p(x|p)$.
+
+  Graph can be executed by \mintinline{python}|x.value()| which returns the tensor $\mbx^*$ and simulates the
+  generative process.
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Tensorflow}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      \begin{align*}
+        h_i = \textnormal{ReLU}(\mbW \mbx + \mbb)
+      \end{align*} \\
+      $\mbx$ is a placeholder for data
+      \vspace{10pt}
+
+      $\mbW, \mbb$ are variables to store parameters across graph evaluations
+      \vspace{10pt}
+
+      MatMul, Add, and ReLU are operations
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \input{tikz/tensorflow}
+    \end{column}
+  \end{columns}
+  % \footnote{https://www.slideshare.net/IsraelBlancas1/tensorflow-la-ia-detrs-de-google}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Model construction}
+  Key concept is compositionality:
+  \begin{itemize}
+    \item Computational graphs can contain arbitrary tensorflow constructs
+    \item Tensorflow conditional evaluations permit nonparametric processes
+    \item Interface with third party tensorflow libraries, e.g. Keras for deep learning
+  \end{itemize}
+  \begin{block}{Generative model}
+    \begin{minted}{python}
+      from edward.models import Bernoulli, Normal
+      from keras.layers import Dense
+
+      z = Normal(mu=tf.zeros([N, d]), sigma=tf.ones([N, d]))
+      h = Dense(256, activation='relu')(z.value())
+      x = Bernoulli(logits=Dense(28 * 28)(h))
+    \end{minted}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Inference abstraction}
+  Edward's random variables can represent probabilistic models as computational graphs.
+
+  How to perform inference? We desire:
+  \begin{itemize}
+    \item Support for many inference classes
+    \item The posterior can be further composed as part of a larger model
+  \end{itemize}
+
+  Edward abstracts this as an optimisation problem
+  \begin{align*}
+    \label{eq:inference-optimization}
+    \min_{\mblambda,\mbtheta}
+    \mathcal{L}(
+      p(\mathbf{z} \mid \mathbf{x}; \mbtheta),
+      q(\mathbf{z} ; \mbphi)
+    )
+  \end{align*}
+  where $q$ can be a variational distribution, point estimate or collection of samples.
+
+  The loss for the optimisation problem is encoded in the same computational graph as the model.
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{MNIST variational auto-encoder}
+  \begin{columns}
+    \begin{column}{0.2\textwidth}
+      \input{tikz/vae}
+    \end{column}
+    \begin{column}{0.8\textwidth}
+      \inputminted[fontsize=\small]{python}{python/mnist-vae.py}
+    \end{column}
+  \end{columns}
+
+  \begin{block}{Inference}
+    \inputminted{python}{python/vae-inference.py}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Criticism}
+  \begin{block}{}
+    \inputminted[fontsize=\scriptsize]{python}{python/beta-bernoulli.py}
+  \end{block}
+  \mintinline{python}|ed.copy()|: conditioning as graph manipulation
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Model comparisons}
+  \includegraphics[width=\textwidth]{img/edward-lls.png}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Semi-supervised learning}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \includegraphics[width=\textwidth]{img/mnist-digits-small}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        Model M2 from~\cite{kingma_semi-supervised_2014}
+        \begin{align*}
+          y &\sim \textnormal{Cat}(y|\pi) \\
+          \mbz &\sim \mathcal{N}(0, I) \\
+          \mbx|y, \mbz &\sim f(\mbx; y, \mbz, \theta)
+        \end{align*}
+        55,000 binarized images, $\mbx$ \\
+        3,000 have associated labels, $y$ \\
+        $f$ is a deconvolutional network \\
+        with a Bernoulli likelihood
+      \end{center}
+    \end{column}
+  \end{columns}
+  \begin{block}{Variational distribution}
+    \begin{align*}
+      q_\phi(y|\mbx) &= \textnormal{Cat}(\mbpi_\phi(\mbx)) \\
+      q_\phi(\mbz|y, \mbx) &= \mathcal{N}(\mbmu_\phi(y, \mbx), \textnormal{diag}(\mbsigma^2_\phi(\mbx)))
+    \end{align*}
+  \end{block}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Semi-supervised learning}
+
+  Loss for labelled samples
+  \begin{align*}
+    \mathcal{L}(\mbx,y) &=
+      - \mathbb{E}_{q_\phi(\mbz|y, \mbx)}[
+        \log p_\theta(\mbx|y, \mbz)
+        + \log p_\theta(y)
+        + \log p(\mbz)
+        - \log q_\phi(\mbz|y, \mbx)]
+  \end{align*}
+
+  Loss for unlabelled samples
+  \begin{align*}
+    \mathcal{U}(\mbx,y) &=
+      \sum_y q_\phi(y|\mbx) \mathcal{L}(\mbx, y)
+      - \mathcal{H}(q_\phi(y|x))
+  \end{align*}
+
+  Gradients of KL-divergence and entropy are analytic
+
+  \begin{block}{Reparameterisation trick}
+    \begin{align*}
+      \nabla_{\{\theta,\phi\}}\mathbb{E}_{q_\phi(\mbz|\mbx)}[\log p_\theta(\mbx|\mbz)]
+      =
+      \mathbb{E}_{\mathcal{N}(\mbepsilon|\mbzero, \mbI)}[
+      \nabla_{\{\theta,\phi\}} \log p_\theta(\mbx|\mbmu_\phi(\mbx) + \mbsigma_\phi(\mbx) \odot \mbepsilon)]
+    \end{align*}
+  \end{block}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Semi-supervised learning}
+  \includegraphics[width=\textwidth]{img/semi-M2-072}
+
+  $\mbx$ sampled from generative model
+
+  $y$ fixed in each row
+
+  $\mbz$ varies across columns
+\end{frame}
+
+
+\begin{frame}
+\frametitle{GPU-accelerated Hamiltonian Monte Carlo}
+\vspace{1ex}
+\begin{columns}
+  \begin{column}{0.25\textwidth}
+    \input{tikz/logistic_regression}
+  \end{column}
+  \begin{column}{0.75\textwidth}
+    \inputminted[fontsize=\scriptsize]{python}{python/bayesian_logistic_regression.py}
+  \end{column}
+\end{columns}
+\vspace{1ex}
+
+Bayesian logistic regression for the Covertype dataset ($N=581012, D=54$) \\
+12-core Intel i7-5930K CPU at 3.50GHz and a NVIDIA Titan X (Maxwell) GPU \\
+100 iterations of HMC
+\vspace{1ex}
+
+\begin{table}[tb]
+\centering
+\begin{tabular}{ll}
+\toprule
+Probabilistic programming language & Runtime
+\\
+\midrule
+Stan (1 CPU) & 171 sec \\
+PyMC3 (12 CPU) & 361 sec \\
+\textbf{Edward (12 CPU)} & \textbf{8.2 sec} \\
+\textbf{Edward (GPU)} & \textbf{4.9 sec} (35x faster than Stan)\\
+\bottomrule
+\end{tabular}
+\end{table}
+\citep{carpenter_stan_2017, salvatier_probabilistic_2015}
+\end{frame}
+
+
+\begin{frame}[allowframebreaks]  % in case more than 1 slide needed
+  %\frametitle{References}
+  \setbeamertemplate{bibliography item}[text]
+  %\bibliographystyle{apalike}
+  \renewcommand*{\bibfont}{\small}
+  \printbibliography
+\end{frame}
+\end{document}

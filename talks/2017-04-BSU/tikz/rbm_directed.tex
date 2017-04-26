@@ -1,0 +1,79 @@
+\usetikzlibrary{shapes, calc, shapes, arrows, positioning}
+
+\tikzstyle{neuron}=[draw,circle,minimum size=20pt,inner sep=0pt, fill=white]
+\tikzstyle{stateTransition}=[style=arrow]
+\tikzstyle{learned}=[text=red]
+
+\begin{tikzpicture}[scale=1.25]
+    \node (v1)[neuron, fill=gray!30] at (0, 0) {$v_1$};
+    \node (v2)[neuron, fill=gray!30] at (1, 0) {$v_2$};
+    \node (v3)[neuron, fill=gray!30] at (2, 0) {$v_3$};
+    \node (vdots) at (3, 0) {$\cdots$};
+    \node (v4)[neuron, fill=gray!30] at (4, 0) {$v_N$};
+
+    \node (h1)[neuron] at (0.5, 1) {$h_1$};
+    \node (h2)[neuron] at (1.5, 1) {$h_2$};
+    \node (hdots) at (2.5, 1) {$\cdots$};
+    \node (h3)[neuron] at (3.5, 1) {$h_M$};
+
+    \node (x1)[neuron, fill=gray!30] at (0, 2) {$v_1^{\rm (ph)}$};
+    \node (x2)[neuron, fill=gray!30] at (1, 2) {$v_2^{\rm (ph)}$};
+    \node (x3)[neuron, fill=gray!30] at (2, 2) {$v_3^{\rm (ph)}$};
+    \node (xdots) at (3, 2) {$\cdots$};
+    \node (x4)[neuron, fill=gray!30] at (4, 2) {$v_N^{\rm (ph)}$};
+
+    \draw[stateTransition] (x1) -- (h1);
+    \draw[stateTransition] (x1) -- (h2);
+    \draw[stateTransition] (x1) -- (hdots);
+    \draw[stateTransition] (x1) -- (h3);
+
+    \draw[stateTransition] (x2) -- (h1);
+    \draw[stateTransition] (x2) -- (h2);
+    \draw[stateTransition] (x2) -- (hdots);
+    \draw[stateTransition] (x2) -- (h3);
+
+    \draw[stateTransition] (x3) -- (h1);
+    \draw[stateTransition] (x3) -- (h2);
+    \draw[stateTransition] (x3) -- (hdots);
+    \draw[stateTransition] (x3) -- (h3);
+
+    \draw[stateTransition] (xdots) -- (h1);
+    \draw[stateTransition] (xdots) -- (h2);
+    \draw[stateTransition] (xdots) -- (hdots);
+    \draw[stateTransition] (xdots) -- (h3);
+
+    \draw[stateTransition] (x4) -- (h1);
+    \draw[stateTransition] (x4) -- (h2);
+    \draw[stateTransition] (x4) -- (hdots);
+    \draw[stateTransition] (x4) -- (h3);
+
+    \draw[stateTransition] (h1) -- (v1);
+    \draw[stateTransition] (h1) -- (v2);
+    \draw[stateTransition] (h1) -- (vdots);
+    \draw[stateTransition] (h1) -- (v3);
+    \draw[stateTransition] (h1) -- (v4);
+
+    \draw[stateTransition] (h2) -- (v1);
+    \draw[stateTransition] (h2) -- (v2);
+    \draw[stateTransition] (h2) -- (vdots);
+    \draw[stateTransition] (h2) -- (v3);
+    \draw[stateTransition] (h2) -- (v4);
+
+    \draw[stateTransition] (h3) -- (v1);
+    \draw[stateTransition] (h3) -- (v2);
+    \draw[stateTransition] (h3) -- (vdots);
+    \draw[stateTransition] (h3) -- (v3);
+    \draw[stateTransition] (h3) -- (v4);
+
+    \draw[stateTransition] (hdots) -- (v1);
+    \draw[stateTransition] (hdots) -- (v2);
+    \draw[stateTransition] (hdots) -- (vdots);
+    \draw[stateTransition] (hdots) -- (v3);
+    \draw[stateTransition] (hdots) -- (v4);
+
+    % \draw[stateTransition] (h4) -- (v1);
+    % \draw[stateTransition] (h4) -- (v2);
+    % \draw[stateTransition] (h4) -- (vdots);
+    % \draw[stateTransition] (h4) -- (v3);
+
+\end{tikzpicture}

@@ -1,0 +1,13 @@
+\begin{tikzpicture}[remember picture]
+  \node [placeholder] (x) {$\mbx$};
+  \node [var, left=of x] (w) {$\mbW$};
+  \node [var, above left=of w] (b) {$\mbb$};
+  \node [operation, right=of b] (matmul) {MatMul};
+  \draw [->, thick] (x) -- (matmul);
+  \draw [->, thick] (w) -- (matmul);
+  \node [operation, above=of matmul] (add) {Add};
+  \draw [->, thick] (matmul) -- (add);
+  \draw [->, thick] (b) -- (add);
+  \node [operation, above=of add] (relu) {ReLU};
+  \draw [->, thick] (add) -- (relu);
+\end{tikzpicture}
