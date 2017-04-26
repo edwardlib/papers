@@ -1,0 +1,245 @@
+\documentclass[final]{beamer}
+
+\usepackage[scale=1.24]{beamerposter}
+\usetheme{confposter}
+\usefonttheme{serif}
+
+% \input{preamble/preamble}
+\input{preamble/preamble_math}
+\input{preamble/preamble_acronyms}
+\input{preamble/preamble_customization}
+\input{preamble/preamble_tikz}
+
+\title{Deep Probabilistic Programming with Edward}
+\author{Dustin Tran\textsuperscript{\textdagger},
+Matt Hoffman\textsuperscript{*}\textsuperscript{\ddag},
+Kevin Murphy\textsuperscript{\ddag},
+Eugene Brevdo\textsuperscript{\ddag},
+Rif Saurous\textsuperscript{\ddag},
+David Blei\textsuperscript{\textdagger}}
+\institute{
+\textsuperscript{\textdagger}Columbia University,
+\textsuperscript{*}Adobe Research,
+\textsuperscript{\ddag}Google
+}
+
+\begin{document}
+
+\begin{frame}[t]
+\begin{columns}[t]
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\begin{column}{\onecolwid}
+
+\begin{alertblock}{Summary}
+\begin{itemize}
+  \item
+Deep neural networks are popular in large part due to their
+
+compositional nature. How do we do this for
+probabilistic modeling?
+  \item We describe
+Edward, a Turing-complete \acrlong{PPL}.
+\item Edward builds
+two representations---random variables and
+inference.
+\item
+For example, we show how to design rich variational models and \acrlongpl{GAN}.
+\end{itemize}
+\end{alertblock}
+
+\begin{block}{Compositional Representations for Probabilistic Models}
+\begin{itemize}
+\item
+We define random variables as the key compositional representation.
+\item
+They are class objects e.g. with log-density and sample methods.
+\item
+Each random variable $\mbx$ is associated to a
+tensor $\mbx^*$ in the computational graph, which represents a single
+sample $\mbx^*\sim p(\mbx)$.
+\item
+Mutable states represent enable conditioning sets to vary,
+$p(\mby\g\mbx)$ and optimization of parameters, $p(\mbx; \theta)$.
+\end{itemize}
+\end{block}
+
+\begin{block}{Compositional Representations for Inference}
+\begin{itemize}
+\item
+Given data $\mbx_{\text{train}}$, inference aims to calculate the
+posterior
+$p(\mathbf{z}, \beta\mid \mathbf{x}_{\text{train}}; \mbtheta)$, where
+$\mbtheta$ are any model parameters to estimate.
+\item
+In variational inference, the idea is to posit an approximating family
+$q\in\mathcal{Q}$ and to find the closest member $q^*$.
+We write it with mutable states representing its parameters,
+where
+$q(\beta;\mu,\sigma) = \operatorname{Normal}(\beta; \mu,\sigma)$,
+$q(\mbz;\pi) = \operatorname{Categorical}(\mbz;\pi)$.
+\vspace{2ex}
+\hspace{-4.1em}
+\includegraphics[height=5.25cm]{img/inference_variational.png}
+\item
+Specific variational algorithms inherit from
+\texttt{VariationalInference} to define their own methods,
+e.g., a
+loss function and gradient.
+\item
+Monte Carlo approximates the posterior using samples.
+We represent it where
+the approximating family is an empirical distribution,
+$q(\beta; \{\beta^{(t)}\}) = \frac{1}{T}\sum_{t=1}^T \delta(\beta,
+\beta^{(t)})$,
+$q(\mbz; \{\mbz^{(t)}\}) = \frac{1}{T}\sum_{t=1}^T \delta(\mbz,
+\mbz^{(t)})$.
+
+\vspace{1ex}
+\includegraphics[height=5.25cm]{img/inference_monte.png}
+\item
+Monte Carlo
+algorithms proceed by updating one sample $\beta^{(t)},\mbz^{(t)}$ at a time in the empirical
+approximation.
+Specific \glsunset{MC}\gls{MC} samplers determine the update rules.
+\end{itemize}
+\end{block}
+
+\end{column}
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\begin{column}{\onecolwid}
+
+\begin{block}{Example: Variational Auto-Encoder}
+\begin{tabular}{cc}
+\hspace{-2.15em}
+\includegraphics{img/vae_graph.png}
+&
+\hspace{-0.5em}
+\includegraphics[width=0.85\textwidth]{img/vae_code.png}
+\end{tabular}
+\vspace{-2ex}
+\end{block}
+
+\begin{block}{Example: Generative Adversarial Networks}
+\begin{tabular}{cc}
+\hspace{-1.5em}
+\includegraphics{img/gan_graph.png}
+&
+\includegraphics[width=0.77\textwidth]{img/gan_code.png}
+\end{tabular}
+\vspace{-2ex}
+\end{block}
+
+\begin{block}{Example: Bayesian RNN with Variable Length}
+\begin{tabular}{cc}
+\hspace{-1.5em}
+\includegraphics{img/bayesian_rnn_graph.png}
+&
+\includegraphics[width=0.80\textwidth]{img/bayesian_rnn_code.png}
+\end{tabular}
+\vspace{-2ex}
+\end{block}
+
+\begin{block}{Composing Inferences}
+Core to Edward's design is that inference can be written as a collection
+of separate inference programs. Below we demonstrate variational EM.
+\vspace{1ex}
+
+\begin{center}
+\includegraphics{img/composing.png}
+\end{center}
+
+\end{block}
+
+\end{column}
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\begin{column}{\onecolwid}
+
+\begin{block}{Experiments: Recent Methods in Variational Inference}
+\begin{table}[tb]
+\centering
+\begin{tabular}{lcc}
+\toprule
+Inference method & Negative log-likelihood
+\\
+\midrule
+\Gls{VAE} \citep{kingma2014autoencoding} & $\le$ 88.2 \\
+\gls{VAE} without analytic KL & $\le$ 89.4 \\
+\gls{VAE} with analytic entropy & $\le$ 88.1 \\
+\gls{VAE} with score function gradient & $\le$ 87.9 \\
+Normalizing flows \citep{rezende2015variational} & $\le$ 85.8 \\
+Hierarchical variational model \citep{ranganath2016hierarchical} & $\le$ 85.4 \\
+Importance-weighted auto-encoders ($K=50$) \citep{burda2016importance}
+& $\le$ 86.3 \\
+\acrshort{HVM} with \acrshort{IWAE} objective ($K=5$)
+& $\le$ 85.2 \\
+R\'{e}nyi divergence ($\alpha=-1$) % \citep{li2016variational}
+& $\le$ 140.5 \\
+%\gls{GAN} objective \citep{goodfellow2014generative}& -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{1ex}
+Inference methods for a probabilistic decoder on binarized
+MNIST. The Edward \acrshort{PPL} enables fast experimentation with
+many algorithms.
+\end{block}
+
+\begin{block}{Experiments: GPU-accelerated Hamiltonian Monte Carlo}
+\begin{tabular}{cc}
+\hspace{-1em}
+\includegraphics{img/logistic_graph.png}
+&
+\includegraphics{img/logistic_code.png}
+\end{tabular}
+\vspace{1ex}
+
+We apply Bayesian logistic regression to
+Covertype ($N=581012$, $D=54$).
+
+12-core Intel i7-5930K CPU at 3.50GHz, a NVIDIA Titan X (Maxwell) GPU.
+
+We compare the runtime of HMC for 100 iterations (and same settings).
+\vspace{1ex}
+
+\begin{table}[tb]
+\centering
+\begin{tabular}{lr}
+\toprule
+Probabilistic programming system & Runtime (s)
+\\
+\midrule
+Handwritten NumPy (1 CPU) & 534 \\
+Stan (1 CPU) & 171 \\
+PyMC3 (12 CPU) & 30.0 \\
+\textbf{Edward (12 CPU)} & \textbf{8.2} \\
+Handwritten TensorFlow (GPU) & 5.0 \\
+\textbf{Edward (GPU)} & \textbf{4.9} (35x faster than Stan)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{1ex}
+Edward (GPU) is significantly faster than other systems. In addition,
+Edward has no overhead: it is as fast as handwritten TensorFlow.
+\end{block}
+
+\vspace{-2ex}
+\begin{block}{References}
+\small{\bibliographystyle{apalike}
+\bibliography{BIB}\vspace{0.75in}}
+\end{block}
+
+\end{column}
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\end{columns} % End of all the columns in the poster
+\end{frame}   % End of the enclosing frame
+\end{document}
