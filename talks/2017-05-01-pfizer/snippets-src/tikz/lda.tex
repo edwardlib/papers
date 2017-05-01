@@ -1,0 +1,28 @@
+\begin{tikzpicture}
+
+  % Nodes
+  \node[latent]               (phi)      {$\phi_k$} ;
+  \node[latent, below=1.0cm of phi] (theta)    {$\theta_d$} ;
+  \node[latent, right=1.0cm of theta] (z)    {$z_{d,n}$} ;
+  \node[obs, right=1.0cm of z]      (w)        {$w_{d,n}$} ;
+
+  % Edges
+  \draw[style=arrow, bend left] (phi) to (w);
+  \edge{z}{w};
+  \edge{theta}{z};
+
+  % Plates
+  \plate[inner sep=0.15cm, yshift=0.1cm,
+    label={[xshift=-15pt,yshift=13pt]south east:$N$}] {plate1} {
+    (w)(z)
+  } {};
+  \plate[inner sep=0.4cm,
+    label={[xshift=-15pt,yshift=13pt]south east:$D$}] {plate2} {
+    (w)(z)(theta)
+  } {};
+  \plate[inner sep=0.2cm,
+    label={[xshift=-15pt,yshift=15pt]south east:$K$}] {plate3} {
+    (phi)
+  } {};
+
+\end{tikzpicture}
