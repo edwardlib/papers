@@ -1,0 +1,297 @@
+%##############################################################################
+% Preamble
+%##############################################################################
+\documentclass[10pt,
+               xcolor={usenames,dvipsnames},
+               hyperref={colorlinks,linktoc=all,citecolor=Plum,linkcolor=MidnightBlue,urlcolor=MidnightBlue},noamssymb]{beamer}
+\input{preamble/preamble}
+\input{preamble/preamble_acronyms}
+\input{preamble/preamble_math}
+\input{preamble/preamble_tikz}
+
+\usepackage{subfigure}
+\definecolor{light}{RGB}{199, 153, 199}
+\definecolor{dark}{RGB}{143, 39, 143}
+\definecolor{gray80}{gray}{0.8}
+
+\usepackage{natbib}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamercolor{itemize item}{fg=black!67}
+\setbeamercolor*{enumerate item}{fg=black!67}
+\setbeamercolor*{enumerate subitem}{fg=black!67}
+\setbeamercolor*{enumerate subsubitem}{fg=black!67}
+
+\definecolor{charcoal}{HTML}{222222}
+\definecolor{snow}{HTML}{F9F9F9}
+
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{normal text}{fg=charcoal}
+\setbeamercolor{structure}{fg=charcoal}
+
+\newenvironment{changemargin}[1]{
+  \begin{list}{}{
+    \setlength{\topsep}{0pt}
+    \setlength{\leftmargin}{#1}
+    \setlength{\rightmargin}{#1}
+    \setlength{\listparindent}{\parindent}
+    \setlength{\itemindent}{\parindent}
+    \setlength{\parsep}{\parskip}
+  }
+  \item[]}{\end{list}}
+
+\title{}
+\begin{document}
+
+\begin{frame}[plain,t]
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=0.50cm, yshift=-3.00cm, anchor=north west] at (current page.north west) {
+    \begin{tabular}{l}
+    {\Large\bf Edward: A library for probabilistic modeling,}\\[1ex]
+    {\Large\bf inference, and criticism}\\[2ex]
+    {\large }\\[4ex]
+    Dustin Tran, David M. Blei\\
+    Columbia University\\[4ex]
+    Matt Hoffman, Rif A. Saurous, Eugene Brevdo, \\
+    Kevin Murphy \\
+    Google Brain
+    \end{tabular}
+  };
+  \node [xshift=-1.50cm, yshift=3.00cm, anchor=mid east] at (current page.south
+  east) {
+\includegraphics[width=0.25\textwidth]{img/edward.png}
+  };
+  \node [xshift=-1.30cm, yshift=2.45cm, anchor=mid east] at (current page.south
+  east) {
+\large \url{edwardlib.org}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain,t]
+\vspace{2ex}
+\begin{center}
+\includegraphics[width=0.67\textwidth]{img/nytimes.png}
+\\[2ex]
+Topics found in 1.8M articles from the New York Times
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-5.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Hoffman, Blei, Wang, Paisley 2013]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain,t]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{img/genetics.png}
+\\[2ex]
+Population analysis of 2 billion genetic measurements
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-2.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Gopalan+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain,t]
+\vspace{15ex}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{img/control.png}
+\\[2ex]
+Understanding scenes, concepts, and control
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-4.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Eslami+ 2016; Lake+ 2015]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain,t]
+\vspace{2ex}
+\begin{center}
+\includegraphics[width=0.9\textwidth]{img/taxis.png}
+\\[2ex]
+Exploratory analysis of 1.7M taxi trajectories, in Stan
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-3.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Kucukelbir+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain,t]
+\vspace{15ex}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{img/vision.png}
+\\[2ex]
+Compression and content generation
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-5.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Van der Oord+ 2016; Gregor+ 2016]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{George E.P. Box (1919 - 2013)}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+    \begin{center}
+     \includegraphics[width=\columnwidth]{img/box.jpg}
+     \end{center}
+\end{column}
+\begin{column}{0.5\textwidth}
+An iterative process for science:
+\\[1ex]
+\begin{enumerate}
+\item Build a model of the science
+\\[1ex]
+\item Infer the model given data
+\\[1ex]
+\item Criticize the model given data
+\end{enumerate}
+\end{column}
+\end{columns}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-8.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Box \& Hunter 1962, 1965; Box \& Hill 1967; Box 1976, 1980]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Box's Loop}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-1cm, yshift=-2.00cm, anchor=north west] at (current page.north west) {
+\includegraphics[width=1.4\textwidth]{img/model_infer_criticize.png}
+  };
+  \node [xshift=3.4cm, yshift=-8.0cm, anchor=north west] at (current page.north west) {
+Edward is a library designed around this loop.
+  };
+  \node [xshift=0cm, yshift=-5.50cm, anchor=north west] at (current page.north west) {
+  };
+  \node [xshift=-4.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Box 1976, 1980; Blei 2014]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\vspace{3ex}
+\textbf{Edward} is a probabilistic programming language
+built on TensorFlow.
+
+\emph{Modeling}
+\begin{itemize}
+\item
+Composable Turing-complete language of random variables.
+\item
+Many data types, tensor vectorization, broadcasting, 3rd party support.
+\item
+Examples:
+Graphical models, neural networks, probabilistic programs.
+\end{itemize}
+
+\emph{Inference}
+\begin{itemize}
+\item
+Composable language for hybrids, message passing, data subsampling.
+\item
+Infrastructure to develop your own algorithms.
+\item
+Examples:
+Black box VI, Hamiltonian MC, stochastic
+gradient MCMC.
+\end{itemize}
+
+\emph{Criticism}
+\begin{itemize}
+\item
+Examples: Scoring rules, hypothesis tests, predictive checks.
+\end{itemize}
+
+\vspace{1ex}
+Features include autodiff, multi-GPUs, distributed, XLA, quantization.
+
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-3.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Tran+ 2016, 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+\vspace{-3.5ex}
+\includegraphics[width=1.1\textwidth]{img/github.png}
+\\[-7ex]
+\includegraphics[width=1.0\textwidth]{img/forum.png}
+\\[-3ex]
+\includegraphics[width=1.0\textwidth]{img/gitter.png}
+\\[2ex]
+\end{center}
+\text{
+We have an active community of several hundred users \& many
+contributors.
+}
+\end{frame}
+
+\begin{frame}
+\frametitle{Who is Using Edward?}
+{\large Users}
+\begin{enumerate}
+\item
+Machine learning enthusiasts, data scientists, business analysts \\
+(\emph{ex. hierarchical GLMs, mixture models, MAP, MCMC, ...})
+\item
+Probabilistic graphical modeling community \\
+(\emph{ex. latent Dirichlet allocation, variational inference, Gibbs})
+\item
+Bayesian deep learning community \\
+(\emph{ex. deep generative models, Bayesian NNs, black box inference})
+\end{enumerate}
+
+{\large Developers}
+\begin{enumerate}
+\item
+David Blei's group
+\item
+Google Brain
+(\emph{in conception/design})
+\item
+Matt Hoffman (\emph{conjugacy}),
+Emily Fox's group
+(\emph{time series + SGMCMC}),
+Justin Bayer (\emph{stochastic RNNs}),
+John Pearson (\emph{neuroscience}),
+a few Master's/Ph.D. students.
+\item
+Collaboration continues to evolve. Contact us! (+visit the Forum)
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[plain,t]
+\frametitle{Simulator-based Model in Population Ecology}
+\begin{center}
+\includegraphics[width=0.6\textwidth]{img/lotka_volterra_plot.png}
+\end{center}
+
+\begin{center}
+\includegraphics[width=1.0\textwidth]{img/lotka_volterra_program.png}
+\end{center}
+\end{frame}
+
+\end{document}

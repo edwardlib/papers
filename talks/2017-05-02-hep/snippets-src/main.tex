@@ -1,0 +1,35 @@
+\documentclass{article} % For LaTeX2e
+\input{preamble/preamble}
+\usepackage{iclr2017_conference}
+\input{preamble/preamble_acronyms}
+\input{preamble/preamble_math}
+\input{preamble/preamble_tikz}
+
+\title{}
+\author{}
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\iclrfinalcopy
+
+\begin{document}
+
+\maketitle
+
+\begin{figure}[t]
+\begin{lstlisting}[language=python]
+beta = LogNormal(tf.zeros(3), tf.ones(3))
+x1 = []  # prey population
+x2 = []  # predator population
+for t in range(1000):
+  x1[t+1] = beta[0] * x1[t] - beta[1] * x1[t] * x2[t] + Normal(0.0, 10.0)
+  x2[t+1] = -beta[1] * x2[t] + beta[1] * x1[t] * x2[t] + Normal(0.0, 10.0)
+\end{lstlisting}
+\caption{}
+\end{figure}
+
+% \bibliographystyle{iclr2017_conference}
+% \bibliography{bib}
+
+\end{document}
