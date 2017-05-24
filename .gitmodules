@@ -1,0 +1,3 @@
+[submodule "tutorials/2017-05-18-PyCon"]
+	path = tutorials/2017-05-18-PyCon
+	url = git@github.com:UnataInc/PyCon2017
