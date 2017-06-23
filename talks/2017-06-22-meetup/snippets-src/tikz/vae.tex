@@ -1,0 +1,23 @@
+\begin{tikzpicture}
+
+  % Nodes
+  \node[latent] (z) {$\mbz_n$};
+  \node[obs, below=of z] (x) {$\mbx_n$};
+
+  \factor[empty, below=of z] {h} {} {} {};
+  \factor[right=of h, xshift=0.5cm] {theta} {$\theta$} {} {};
+  \factor[left=of h, xshift=-0.5cm] {phi} {$\phi$} {} {};
+
+  % Edges
+  \edge{z}{x};
+  \draw[style=arrow, densely dotted, bend left] (x) to (z);
+  \edge{theta}{x};
+  \draw[style=arrow, densely dotted] (phi) to (z);
+
+  % Plates
+  \plate[inner sep=0.4cm, yshift=0.05cm,
+    label={[xshift=-14pt,yshift=14pt]south east:$N$}] {plate1} {
+    (z)(x)
+  } {};
+
+\end{tikzpicture}

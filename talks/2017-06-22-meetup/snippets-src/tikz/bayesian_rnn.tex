@@ -1,0 +1,32 @@
+\begin{tikzpicture}
+
+  % Nodes
+  \node[empty]              (dot)      {} ;
+  \node[obs, right=of dot, xshift=-0.75cm]        (xt) {$\mbx_t$} ;
+  \node[latent, left=of xt, xshift=0.75cm, yshift=-0.75cm]  (bh)  {$\mbb_h$} ;
+  \node[latent, above=of bh, yshift=-0.9cm]      (Wx) {$\mbW_x$} ;
+  \node[latent, above=of Wx, yshift=-0.9cm]      (Wh)      {$\mbW_h$} ;
+  \node[latent, below=of bh, yshift=0.9cm]      (Wy)      {$\mbW_y$} ;
+  \node[latent, below=of Wy, yshift=1.0cm]      (by)      {$\mbb_y$} ;
+
+  \factor[below=0.75cm of xt] {ht} {} {} {};
+  \node[right=0.03cm of ht, yshift=-0.3cm] (htteyt) {$\mbh_t$};
+  \node[empty, left=of ht]      (htminus)    {$\cdots$} ;
+  \node[empty, right=of ht]      (htplus)    {$\cdots$} ;
+
+  \node[obs, below=0.75cm of ht]      (yt)    {$\mby_t$} ;
+  \node[empty, left=of yt]      (ytminus)    {} ;
+  \node[empty, right=of yt]      (ytplus)    {} ;
+
+  % Edges
+  \edge{Wh}{ht};
+  \edge{Wx}{ht};
+  \edge{bh}{ht};
+  \edge{xt}{ht};
+  \edge{Wy}{yt};
+  \edge{by}{yt};
+  \edge{ht}{yt};
+  \edge{htminus}{ht};
+  \edge{ht}{htplus};
+
+\end{tikzpicture}
