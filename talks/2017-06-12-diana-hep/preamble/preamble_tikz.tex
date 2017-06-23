@@ -1,0 +1,22 @@
+\usepackage{tikz}
+\usetikzlibrary{bayesnet}
+
+\pgfdeclarelayer{edgelayer}
+\pgfdeclarelayer{nodelayer}
+\pgfsetlayers{edgelayer,nodelayer,main}
+
+\definecolor{hexcolor0xbfbfbf}{rgb}{0.749,0.749,0.749}
+
+\tikzset{>=latex}
+\tikzstyle{none}   = [inner sep=0pt]
+
+\tikzstyle{line}  = [ - ]
+\tikzstyle{arrow}  = [ ->, shorten <=1pt, shorten >=1pt ]
+\tikzstyle{ardash} = [ dotted, ->, shorten <=1pt, shorten >=1pt ]
+
+\tikzstyle{empty}=[circle,opacity=0.0,text opacity=1.0,inner sep=0pt,minimum
+width=0pt,minimum height=0pt]
+\tikzstyle{box}=[rectangle,fill=White,draw=Black, inner sep=4pt]
+\tikzstyle{filled}=[circle,fill=hexcolor0xbfbfbf,draw=Black]
+\tikzstyle{hollow}=[circle,fill=White,draw=Black]
+\tikzstyle{param}=[rectangle,fill=Black,draw=Black,inner sep=0pt,minimum width=4pt,minimum height=4pt]

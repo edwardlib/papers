@@ -1,0 +1,539 @@
+\documentclass[10pt,
+               xcolor={usenames,dvipsnames},
+               hyperref={colorlinks,linktoc=all,citecolor=Plum,linkcolor=MidnightBlue,urlcolor=MidnightBlue},noamssymb]{beamer}
+\input{preamble/preamble}
+\input{preamble/preamble_acronyms}
+\input{preamble/preamble_math}
+\input{preamble/preamble_tikz}
+
+\usepackage{subfigure}
+\definecolor{light}{RGB}{199, 153, 199}
+\definecolor{dark}{RGB}{143, 39, 143}
+\definecolor{gray80}{gray}{0.8}
+
+\usepackage{natbib}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamercolor{itemize item}{fg=black!67}
+\setbeamercolor*{enumerate item}{fg=black!67}
+\setbeamercolor*{enumerate subitem}{fg=black!67}
+\setbeamercolor*{enumerate subsubitem}{fg=black!67}
+
+\definecolor{charcoal}{HTML}{222222}
+\definecolor{snow}{HTML}{F9F9F9}
+
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{normal text}{fg=charcoal}
+\setbeamercolor{structure}{fg=charcoal}
+
+\newenvironment{changemargin}[1]{
+  \begin{list}{}{
+    \setlength{\topsep}{0pt}
+    \setlength{\leftmargin}{#1}
+    \setlength{\rightmargin}{#1}
+    \setlength{\listparindent}{\parindent}
+    \setlength{\itemindent}{\parindent}
+    \setlength{\parsep}{\parskip}
+  }
+  \item[]}{\end{list}}
+
+\title{}
+\begin{document}
+
+\begin{frame}[plain,t]
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=0.50cm, yshift=-3.00cm, anchor=north west] at (current page.north west) {
+    \begin{tabular}{l}
+    {\Large\bf Edward: A library for probabilistic modeling,}\\[1ex]
+    {\Large\bf inference, and criticism}\\[2ex]
+    {\large }\\[4ex]
+    Dustin Tran\\
+    Columbia University\\[4ex]
+    \end{tabular}
+  };
+  \node [xshift=-1.50cm, yshift=3.00cm, anchor=mid east] at (current page.south
+  east) {
+\includegraphics[width=0.25\textwidth]{img/edward.png}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain]
+\footnotesize
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-0.3cm, yshift=-1.0cm, anchor=north west] at (current page.north west) {
+\begin{tabular}{ccccc}
+\includegraphics[width=22mm]{img/alp.png} &
+\includegraphics[width=22mm]{img/adji.jpg} &
+\includegraphics[width=22mm]{img/maja.png} &
+\includegraphics[width=22mm]{img/dawen.jpg} &
+\includegraphics[width=22mm]{img/blei.jpg}\\
+Alp Kucukelbir & Adji Dieng & Maja Rudolph & Dawen Liang & David Blei\\
+\end{tabular}
+  };
+\end{tikzpicture}
+
+\vspace{30ex}
+\begin{center}
+\vspace*{5mm}
+
+\begin{tabular}{cccc}
+\includegraphics[width=22mm]{img/matt.jpg} &
+\includegraphics[width=22mm]{img/kevin.jpg} &
+\includegraphics[width=22mm]{img/eugene.jpg} &
+\includegraphics[width=22mm]{img/rif.png}\\
+Matt Hoffman & Kevin Murphy & Eugene Brevdo & Rif Saurous\\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}[plain,t]
+\vspace{2ex}
+\begin{center}
+\includegraphics[width=0.67\textwidth]{img/nytimes.png}
+\\[2ex]
+Topics found in 1.8M articles from the New York Times
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-5.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Hoffman, Blei, Wang, Paisley 2013]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain,t]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{img/genetics.png}
+\\[2ex]
+Population analysis of 2 billion genetic measurements
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-2.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Gopalan+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain,t]
+\vspace{15ex}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{img/control.png}
+\\[2ex]
+Understanding scenes, concepts, and control
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-4.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Eslami+ 2016; Lake+ 2015]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain,t]
+\vspace{2ex}
+\begin{center}
+\includegraphics[width=0.9\textwidth]{img/taxis.png}
+\\[2ex]
+Exploratory analysis of 1.7M taxi trajectories, in Stan
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-3.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Kucukelbir+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain,t]
+\vspace{15ex}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{img/vision.png}
+\\[2ex]
+Compression and content generation
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-5.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Van der Oord+ 2016; Gregor+ 2016]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{George E.P. Box (1919 - 2013)}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+    \begin{center}
+     \includegraphics[width=\columnwidth]{img/box.jpg}
+     \end{center}
+\end{column}
+\begin{column}{0.5\textwidth}
+An iterative process for science:
+\\[1ex]
+\begin{enumerate}
+\item Build a model of the science
+\\[1ex]
+\item Infer the model given data
+\\[1ex]
+\item Criticize the model given data
+\end{enumerate}
+\end{column}
+\end{columns}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-8.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Box \& Hunter 1962, 1965; Box \& Hill 1967; Box 1976, 1980]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Box's Loop}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-1cm, yshift=-2.00cm, anchor=north west] at (current page.north west) {
+\includegraphics[width=1.4\textwidth]{img/model_infer_criticize.png}
+  };
+  \node [xshift=3.4cm, yshift=-8.0cm, anchor=north west] at (current page.north west) {
+Edward is a library designed around this loop.
+  };
+  \node [xshift=0cm, yshift=-5.50cm, anchor=north west] at (current page.north west) {
+  };
+  \node [xshift=-4.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Box 1976, 1980; Blei 2014]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\vspace{3ex}
+\textbf{Edward} is a probabilistic programming language
+built on TensorFlow.
+
+\emph{Modeling}
+\begin{itemize}
+\item
+Composable Turing-complete language of random variables.
+\item
+Many data types, tensor vectorization, broadcasting, 3rd party support.
+\item
+Examples:
+Graphical models, neural networks, probabilistic programs.
+\end{itemize}
+
+\emph{Inference}
+\begin{itemize}
+\item
+Composable language for hybrids, message passing, data subsampling.
+\item
+Infrastructure to develop your own algorithms.
+\item
+Examples:
+Black box VI, Hamiltonian MC, stochastic
+gradient MCMC.
+\end{itemize}
+
+\emph{Criticism}
+\begin{itemize}
+\item
+Examples: Scoring rules, hypothesis tests, predictive checks.
+\end{itemize}
+
+\vspace{1ex}
+Features include autodiff, multi-GPUs, distributed, XLA, quantization.
+
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-3.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Tran+ 2016, 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+\vspace{-3.5ex}
+\includegraphics[width=1.1\textwidth]{img/github.png}
+\\[-7ex]
+\includegraphics[width=1.0\textwidth]{img/forum.png}
+\\[-3ex]
+\includegraphics[width=1.0\textwidth]{img/gitter.png}
+\\[2ex]
+\end{center}
+\text{
+We have an active community of several hundred users \& many
+contributors.
+}
+\end{frame}
+
+\begin{frame}
+\frametitle{Who is Using Edward?}
+{\large Users}
+\begin{enumerate}
+\item
+Machine learning enthusiasts, data scientists, business analysts \\
+(\emph{ex. hierarchical GLMs, mixture models, MAP, MCMC, ...})
+\item
+Probabilistic graphical modeling community \\
+(\emph{ex. latent Dirichlet allocation, variational inference, Gibbs})
+\item
+Bayesian deep learning community \\
+(\emph{ex. deep generative models, Bayesian NNs, black box inference})
+\end{enumerate}
+
+{\large Developers}
+\begin{enumerate}
+\item
+David Blei's group
+\item
+Google Brain
+(\emph{in conception/design})
+\item
+Matt Hoffman (\emph{conjugacy}),
+Emily Fox's group
+(\emph{time series + SGMCMC}),
+Justin Bayer (\emph{stochastic RNNs}),
+John Pearson (\emph{neuroscience}),
+a few Master's/Ph.D. students.
+\item
+Collaboration continues to evolve. Contact us! (+visit the Forum)
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{How do we use Edward?}
+\vspace{10ex}
+\begin{center}
+\gray{\Large [Demo]} \\[3ex]
+{\large \url{edwardlib.org/getting-started}}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Model}
+A random variable $\mbx$ is an object parameterized by tensors
+(multi-dimensional arrays) $\theta^*$.
+
+\vspace{-1.0ex}
+\includegraphics[height=0.20\textwidth]{img/random_variables.png}
+
+It is equipped with methods such as \texttt{log\_prob()} and \texttt{sample()}.
+
+Each random variable is associated to a tensor $\mbx^*$, $\mbx^*\sim p(\mbx\g\theta^*)$.
+
+Mutable states let random variables condition on values that
+change, e.g., discriminative models $p(\mby\g\mbx)$ and model
+parameters $p(\mbx; \theta)$.
+\end{frame}
+
+\begin{frame}
+\frametitle{Example: Beta-Bernoulli}
+Consider a Beta-Bernoulli model,
+\begin{align*}
+p(\mbx, \theta) =
+\operatorname{Beta}(\theta\g 1, 1)
+\prod_{n=1}^{50} \operatorname{Bernoulli}(x_n\g \theta),
+\end{align*}
+where $\theta$
+is a probability shared across 50 data points $\mbx\in\{0,1\}^{50}$.
+\begin{center}
+\vspace{-2ex}
+\includegraphics[height=0.175\textwidth]{img/beta-bernoulli.png}
+\end{center}
+Fetching $\mbx$ from the graph generates a binary vector of $50$ elements.
+
+All computation is represented on the graph, enabling us to leverage model structure during inference.
+\end{frame}
+
+\begin{frame}[plain,t]
+\frametitle{Example: Implicit Model (Simulator) in Ecology}
+\begin{center}
+\includegraphics[width=0.6\textwidth]{img/lotka_volterra_plot.png}
+\end{center}
+
+\begin{center}
+\includegraphics[width=1.0\textwidth]{img/lotka_volterra_program.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Inference}
+Given
+\begin{itemize}
+\item Data $\mbx_{\text{train}}$.
+\item
+Model $p(\mbx, \mbz, \mbbeta)$ of
+observed variables $\mbx$ and latent variables $\mbz, \mbbeta$.
+\end{itemize}
+Goal
+\begin{itemize}
+\item
+Calculate posterior distribution
+\begin{equation*}
+p(\mbz, \mbbeta\mid\mbx_{\text{train}}) =
+\frac{p(\mbx_{\text{train}}, \mbz, \mbbeta)}{\int
+p(\mbx_{\text{train}}, \mbz, \mbbeta) \d\mbz\d\mbbeta}.
+\end{equation*}
+\end{itemize}
+\vspace{2ex}
+This is the key problem in Bayesian inference.
+
+(Other inferences such as maximum likelihood and empirical risk minimization
+are also supported.)
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-4.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\small \url{edwardlib.org/tutorials}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Inference}
+
+In Edward, all inference has the same structure.
+
+\begin{center}
+\vspace{-2.0ex}
+\includegraphics[height=0.05\textheight]{img/inference.png}
+\end{center}
+
+\texttt{Inference} has two inputs: \\
+\begin{enumerate}
+\vspace{-3ex}
+\item
+latent variables $\mbz,\beta$, binding model variables to approximate factors;
+\item
+observed variables $\mbx$, binding model variables to data.
+\end{enumerate}
+
+\texttt{Inference} has class methods:
+\begin{itemize}
+\item
+\texttt{run()} runs the algorithm from initialization to convergence;
+\item
+\texttt{initialize()}, \texttt{update()}, \texttt{print\_progress()}, etc.
+provides finer control.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Inference}
+Variational inference. It uses a variational model.
+\begin{center}
+\vspace{-2.0ex}
+\includegraphics[height=0.18\textheight]{img/inference_variational.png}
+\end{center}
+Monte Carlo. It uses an Empirical approximation.
+\begin{center}
+\includegraphics[height=0.17\textheight]{img/inference_monte.png}
+\end{center}
+
+Conjugacy \& exact inference. It uses symbolic algebra on the graph.
+\end{frame}
+
+\begin{frame}
+\frametitle{Experiment: GPU-accelerated Hamiltonian Monte Carlo}
+\begin{center}
+\includegraphics[width=0.85\textwidth]{img/experiments_hmc.png}
+\end{center}
+\vspace{-1ex}
+Run HMC for 100 iterations and fixed hyperparameters.
+
+Bayesian logistic regression for Covertype ($581012$ data points, $54$
+features).
+
+12-core Intel i7-5930K CPU at 3.50GHz and NVIDIA Titan X (Maxwell) GPU.
+Single precision.
+
+\vspace{4ex}
+\textbf{Edward is orders of magnitude faster than existing software
+for large data.}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-2cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Tran+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Experiment: Recent Methods in Variational Inference}
+\begin{center}
+\includegraphics[height=0.4\textwidth]{img/experiments_vi.png}
+\end{center}
+\vspace{2ex}
+\textbf{Edward enables fast experimentation with state-of-the-art methods.}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-2cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Tran+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[c]
+\frametitle{Summary}
+\begin{enumerate}
+\item
+Edward is a library designed for fast experimentation.
+
+It emphasizes fine tuning of inference alongside model development.
+\item
+Edward is integrated into TensorFlow.
+
+It features significant speedups over existing systems, bridging
+research design and deployment.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Current directions}
+
+We are robustifying Edward.
+\begin{enumerate}
+\item Bug fixes, improved vectorization/types, errors/warnings.
+\item More built-in algorithms and model / inference tutorials.
+\item More automation (ex. transformations, visualization).
+\end{enumerate}
+\vspace{3ex}
+
+We are applying Edward for modeling, inference, and scientific research.
+\begin{enumerate}
+\vspace{-1.5ex}
+\item
+Generative models for language and vision.
+\gray{(OpenAI)}
+\item
+Causal models for genome wide association studies. \gray{(Storey, Engelhardt)}
+\item
+Implicit models (``simulators'') and their Bayesian inference.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{References}
+\begin{center}
+\includegraphics[width=0.3\textwidth]{img/edward.png}
+\\
+\large \url{edwardlib.org}
+\end{center}
+\vspace{2ex}
+
+\begin{itemize}
+\item
+\textbf{D.~Tran}, A.~Kucukelbir, A.~Dieng, M.~Rudolph, D.~Liang, and
+D.M.~Blei.
+Edward: A library for probabilistic modeling, inference, and criticism.
+\gray{arXiv preprint arXiv:1610.09787, 2016.}
+\item
+\textbf{D.~Tran}, M.D.~Hoffman, R.A.~Saurous, E.~Brevdo, K.~Murphy, and
+D.M.~Blei.
+Deep probabilistic programming. \\
+\gray{International Conference on Learning Representations, 2017.}
+\end{itemize}
+\end{frame}
+
+\end{document}
