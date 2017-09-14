@@ -1,0 +1,178 @@
+% # FONTS
+
+\usepackage[T1]{fontenc}
+\usepackage{tgtermes}
+
+% NOTE: MUST INSTALL SEPARATELY
+%\usepackage[subscriptcorrection,
+%           amssymbols,
+%           mtpbb,
+%           mtpcal,
+%           nofontinfo  % suppresses all warnings
+%          ]{mtpro2}
+
+% NOTE: MUST UNCOMMENT IF NOT USING MTPRO2
+\usepackage{amssymb}
+\newcommand{\mathbold}[1]{\ensuremath{\boldsymbol{\mathbf{#1}}}}
+
+% \usepackage{scalefnt,letltxmacro}
+% \LetLtxMacro{\oldtextsc}{\textsc}
+% \renewcommand{\textsc}[1]{\oldtextsc{\scalefont{1.10}#1}}
+% % \renewcommand*\ttdefault{lmvtt}
+% \usepackage[ttdefault=true]{AnonymousPro}
+
+% ICLR font
+\usepackage{times}
+
+% # MATH
+
+\usepackage{amsmath, amsthm, amsfonts}
+\usepackage{mathtools}
+
+% # SPACING and TEXT
+
+\usepackage[
+  paper  = letterpaper,
+  left   = 1.25in,
+  right  = 1.25in,
+  top    = 1.0in,
+  bottom = 1.0in,
+  ]{geometry}
+% \usepackage[final,expansion=alltext]{microtype}
+\usepackage[english]{babel}
+\usepackage[parfill]{parskip}
+\usepackage{afterpage}
+\usepackage{enumitem}
+\usepackage{framed}
+\usepackage{xspace}
+
+% # EDITING
+
+\usepackage{lineno}
+\renewcommand\linenumberfont{\normalfont
+                             \footnotesize
+                             \sffamily
+                             \color{SkyBlue}}
+
+\usepackage{ragged2e}
+\DeclareRobustCommand{\sidenote}[1]{\marginpar{
+                                    \RaggedRight
+                                    \textcolor{Plum}{\textsf{#1}}}}
+
+\newcommand{\parnum}{\bfseries\P\arabic{parcount}}
+\newcounter{parcount}
+\newcommand\p{%
+    \stepcounter{parcount}%
+    \leavevmode\marginpar[\hfill\parnum]{\parnum}%
+}
+\DeclareRobustCommand{\parhead}[1]{\textbf{#1}~}
+\setlength{\marginparwidth}{1in}
+
+% # COLOR
+
+\usepackage[usenames,dvipsnames]{xcolor}
+\definecolor{shadecolor}{gray}{0.9}
+
+\newcommand{\red}[1]{\textcolor{BrickRed}{#1}}
+\newcommand{\orange}[1]{\textcolor{BurntOrange}{#1}}
+\newcommand{\green}[1]{\textcolor{OliveGreen}{#1}}
+\newcommand{\blue}[1]{\textcolor{MidnightBlue}{#1}}
+\newcommand{\sky}[1]{\textcolor{SkyBlue}{#1}}
+\newcommand{\gray}[1]{\textcolor{black!60}{#1}}
+
+% # COUNTERS
+
+\renewcommand{\labelenumi}{\color{black!67}{\arabic{enumi}.}}
+\renewcommand{\labelenumii}{{\color{black!67}(\alph{enumii})}}
+\renewcommand{\labelitemi}{{\color{black!67}\textbullet}}
+
+% # FIGURES
+
+\usepackage{graphicx}
+\usepackage[labelfont=bf]{caption}
+\usepackage[format=hang]{subcaption}
+
+% # TABLES
+
+\usepackage{booktabs, array}
+
+% # ALGORITHMS
+
+\usepackage[algoruled]{algorithm2e}
+\setlength{\interspacetitleruled}{8pt}
+\usepackage{listings}
+\usepackage{fancyvrb}
+\fvset{fontsize=\small}
+
+% # BIBLIOGRAPHY AND LINKS
+
+\usepackage{natbib}
+\usepackage[colorlinks,linktoc=all]{hyperref}
+\usepackage[all]{hypcap}
+\hypersetup{citecolor=MidnightBlue}
+\hypersetup{linkcolor=MidnightBlue}
+\hypersetup{urlcolor=MidnightBlue}
+\usepackage[nameinlink]{cleveref}
+\creflabelformat{equation}{#2\textup{#1}#3}  % <- remove parenthesis from equations
+
+% # ACRONYMS
+
+\usepackage
+[acronym,smallcaps,nowarn,section,nonumberlist]{glossaries}
+\glsdisablehyper{}
+
+% # CODE SNIPPETS
+
+\definecolor{strings}{rgb}{.624,.251,.259}
+\definecolor{keywords}{rgb}{.224,.451,.686}
+\definecolor{comment}{rgb}{.322,.451,.322}
+
+\lstdefinelanguage{python}{
+  % morekeywords={from, import, as, for, in, while, def, return, =, +,
+  % -, /, *, lambda},
+  % keywords=[2]{build_toy_dataset, neural_network, __init__},
+  keywords=[3]{Normal, Bernoulli, Beta, Categorical, Dirichlet,
+  Exponential, MultivariateNormalFull, RandomVariable,
+  DirichletProcess, Empirical, PointMass, Gamma,
+  MultivariateNormalTriL,
+  MAP, Inference, KLqp, HMC, SGLD, KLpq,
+  VariationalInference, MonteCarlo, ConjugateInference, GANInference,
+  WGANInference,
+  rnn_cell, dirichlet_process, cond, body, generative_network,
+  discriminative_network,
+  evaluate, ppc, copy, dot, get_session},
+  morecomment=[l]{\#},
+  morecomment=[s]{"""}{"""},
+  morestring=[b]',
+  morestring=[b]",
+  alsoletter={<>=-+/*},
+  sensitive=true
+}
+
+\lstset{
+  language=python,
+  keywordstyle=\color{BrickRed}\bfseries\ttfamily,
+  keywordstyle=[2]\color{Violet}\ttfamily,
+  keywordstyle=[3]\color{keywords}\ttfamily,
+  commentstyle=\color{comment}\ttfamily,
+  stringstyle=\color{strings}\ttfamily,
+  basicstyle=\fontsize{8pt}{8.25pt}\selectfont\ttfamily,
+  basewidth=0.5em,
+  numbers=left,
+  numberstyle=\tiny,
+  stepnumber=1,
+  columns=fixed,
+  xleftmargin=2ex,%0.25in,
+  firstnumber=1,
+  showstringspaces=false,
+  mathescape=true,
+  keepspaces=True,
+  tabsize=2
+}
+\renewcommand{\texttt}[1]{\lstinline[basicstyle=\fontsize{8pt}{8.25pt}\selectfont\ttfamily]{#1}}
+
+% # USEFUL COMMANDS
+
+\newcommand{\pp}{\textcolor{Plum}{\P\,}}
+\newcommand{\draftdisclaimer}{\begin{center}\begin{framed} DRAFT: DO
+NOT CITE OR DISTRIBUTE \end{framed}\end{center}}
