@@ -1,0 +1,22 @@
+% Define the column widths and overall poster size
+
+% To set effective sepwid, onecolwid and twocolwid values, first choose how many
+% columns you want and how much separation you want between columns In this
+% template, the separation width chosen is 0.024 of the paper width and a
+% 4-column layout onecolwid should therefore be (1-(# of columns+1)*sepwid)/# of
+% columns e.g. (1-(4+1)*0.024)/4 = 0.22 Set twocolwid to be (2*onecolwid)+sepwid
+% = 0.464 Set threecolwid to be (3*onecolwid)+2*sepwid = 0.708
+
+\setlength{\paperwidth}{36in}  % A0 width: 46.8in
+\setlength{\paperheight}{48in} % A0 height: 33.1in
+
+\newlength{\sepwid}
+\newlength{\onecolwid}
+\newlength{\twocolwid}
+
+\setlength{\sepwid}{0.02\paperwidth} % Separation width (white space) between
+% columns
+\setlength{\onecolwid}{0.3\paperwidth} % Width of one column
+\setlength{\twocolwid}{0.62\paperwidth} % Width of two columns
+
+\setlength{\topmargin}{-0.5in} % Reduce the top margin size

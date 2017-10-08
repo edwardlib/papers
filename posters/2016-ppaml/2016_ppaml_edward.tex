@@ -1,0 +1,265 @@
+\documentclass{beamer}
+
+\usepackage[scale=1.24,dvipsnames]{beamerposter}
+\usetheme{confposter}
+\usefonttheme{serif}
+
+\input{preamble/preamble}
+\input{preamble/preamble_size_portrait_3col}
+\input{preamble/preamble_tikz}
+\input{preamble/preamble_math.tex}
+% \input{preamble/preamble_acronyms}
+% \input{preamble/preamble_listings}
+
+\title{Edward: a library for probabilistic modeling, inference, and criticism.}
+\author{
+Dustin Tran, David Blei, Alp Kucukelbir, Adji Dieng, Maja Rudolph, and Dawen Liang
+}
+\institute{
+Columbia University
+}
+
+
+
+\begin{document}
+
+\begin{frame}[t] 
+\begin{columns}[t,totalwidth=10in]  % HACK?!?!?
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+%--COL 1------------------------------------------------------------------------
+\begin{column}{\onecolwid} 
+
+\begin{alertblock}{Summary}
+\begin{itemize}
+  \item Edward is a library for probabilistic modeling, inference, and
+  criticism \citep{tran2016edward}.
+  \item Edward supports probability models $p(\mbx,\mbz)$.
+  \item Edward leverages black box variational inference.
+  \item Edward enables model and inference criticism.
+  \item Edward is a Python/TensorFlow project.\newline\newline
+  \textcolor{Fuchsia}{\texttt{https://github.com/blei-lab/edward}}\newline
+\end{itemize}
+\end{alertblock}
+
+\begin{block}{Goals}
+\begin{center}
+\includegraphics[width=9in]{img/edward_venn.pdf}
+\end{center}
+\begin{itemize}
+  \item Edward is an open-source research library for probabilistic programming
+  research.\newline
+  % \item Edward is named after the innovative statistician George Edward Pelham
+  % Box.\newline
+  \item Edward follows Box's philosophy of statistics and machine learning
+  \citep{box1976science}
+\end{itemize}
+\begin{enumerate}
+  \item Build a probabilistic model of the process
+  \item Reason about the process given model and data
+  \item Criticize the model, revise and repeat
+\end{enumerate}
+\end{block}
+
+\begin{block}{Features}
+\begin{itemize}
+  \item Edward supports the following modeling languages\newline
+  \begin{itemize}
+    \item TensorFlow (with neural network composition via Keras, Pretty
+    Tensor, or TensorFlow-Slim)
+    \item Stan
+    \item PyMC3
+    \item Python through Numpy/Scipy\newline
+  \end{itemize}
+  \item Edward implements black box inference through variational inference
+  \newline
+  \begin{itemize}
+    \item black box variational inference \citep{ranganath2014black}
+    \item data-level stochastic variational inference \citep{hoffman2013stochastic}
+    \item variational auto-encoders \citep{kingma2013auto}
+    \item delta function / MAP approximation
+    \item Laplace approximation\newline
+  \end{itemize}
+  \item Edward supports model and inference criticism\newline
+  \begin{itemize}
+    \item posterior predictive checks \citep{gelman1996posterior}
+    \item a library of evaluation metrics
+  \end{itemize}
+\end{itemize}
+\end{block}
+
+\begin{block}{Backend}
+\begin{itemize}
+  \item Edward is built on top of TensorFlow\newline
+  \begin{itemize}
+    \item computation graphs
+    \item parallelization / GPU support
+    \item automatic differentiation
+    \item optimization algorithms\newline
+  \end{itemize}
+  \item Edward implements its own math/probability library.
+\end{itemize}
+\end{block}
+
+\end{column} 
+%-------------------------------------------------------------------------------
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+%--COL 2------------------------------------------------------------------------
+\begin{column}{\onecolwid} 
+
+\begin{block}{Scope}
+\begin{center}
+\includegraphics[width=9in]{img/prob_venn.pdf}
+\end{center}
+\begin{itemize}
+  \item Edward focuses on probability models $p(\mbx,\mbz)$.
+  \item Edward supports models with\newline
+  \begin{itemize}
+    \item large data $\mbx$
+    \item continuous or discrete latent variables $\mbz$
+    \item complex structures: e.g.~hierarchical models, neural networks,
+    deep exponential families.
+  \end{itemize}
+  \item The goal is to infer the posterior $p(\mbz\mid\mbx)$.
+\end{itemize}
+\end{block}
+
+\begin{block}{Design}
+\blu{\large\textbf{Data}}\\
+Edward \texttt{Data} objects are containers. A \texttt{Data} object has structure 
+(dimensions); these must match a probability model during inference. A \texttt
+{Data} object may optionally implement a custom subsampling routing; the default
+is to subsample along the first dimension.
+
+\vspace*{0.5in}
+
+\blu{\large\textbf{Models}}\\
+Edward has two types of \texttt{Models}:
+\begin{enumerate}
+  \item Probability models of data and latent variables
+  \item Variational models of latent variables
+\end{enumerate}
+
+Probability models must implement
+\begin{center}
+\texttt{log\_prob(self, x, theta)}
+\end{center}
+
+Variational models must implement
+\begin{center}
+\texttt{sample(self, size=1)} and \texttt{entropy(self)}
+\end{center}
+
+\vspace*{0.5in}
+
+\blu{\large\textbf{Inference}}\\
+Edward supports many forms of variational inference. One form matches the
+variational model to the posterior $p(\mbz\mid\mbx)$ by maximizing
+\begin{align}
+  \textsc{elbo} &= 
+  \E_{q(\mbz\;;\;\mblambda)}
+  \left[
+  \log p(\mbx,\mbz)
+  -
+  \log q(\mbz\;;\;\mblambda)
+  \right].
+  \label{eq:elbo}
+\end{align}
+Edward solves this optimization using automatic differentiation and stochastic
+gradient methods.
+
+\vspace*{0.5in}
+
+\blu{\large\textbf{Criticism}}\\
+Edward provides building blocks for criticizing both model and inference.
+An example is a pipeline for simulating new datasets using samples from the
+variational approximation; this enables posterior predictive checks.
+
+\end{block}
+
+\begin{block}{Smart Inference}
+Solving \Cref{eq:elbo} is the main computational task of inference. While
+automatic differentiation helps by avoiding manual derivations of gradients, the
+expectation in the objective function poses a greater challenge.\newline
+
+There are two approaches to computing gradients of \cref{eq:elbo}
+\begin{enumerate}
+  \item score function estimator \hfill \gray{(more general)}
+  \item reparameterization estimator \hfill \gray{(less noisy)}\newline
+\end{enumerate}
+
+Edward prefers reparameterization, if the variational model admits it.
+Otherwise, it defaults to the score function estimator.\newline
+
+Edward also prefers an analytic (closed-form) entropy term
+$\E_{q(\mbz\;;\;\mblambda)} \left[-\log q(\mbz\;;\;\mblambda)\right]$, 
+if the variational model admits it.
+\end{block}
+
+\end{column} 
+%-------------------------------------------------------------------------------
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+%--COL 4------------------------------------------------------------------------
+\begin{column}{\onecolwid} 
+
+\begin{block}{Example \emph{(abridged)}}
+\begin{figure}[h]
+\lstinputlisting{img/bernoulli.py}
+\end{figure}
+\end{block}
+
+\begin{block}{Next Steps}
+\blu{\large\textbf{Data}}\\
+\begin{itemize}
+  \item distributed / data in the cloud
+  \item streaming data
+\end{itemize}
+
+\vspace*{0.5in}
+
+\blu{\large\textbf{Models}}\\
+\begin{itemize}
+  \item a new modeling language
+\end{itemize}
+
+\vspace*{0.5in}
+
+\blu{\large\textbf{Inference}}\\
+\begin{itemize}
+  \item subsampling of latent variables
+  \item amortized variational inference
+  \item marginal maximum likelihood
+  \item alternative divergence measures
+\end{itemize}
+
+\vspace*{0.5in}
+
+\blu{\large\textbf{Criticism}}\\
+\begin{itemize}
+  \item library of built-in predictive checks
+\end{itemize}
+
+\end{block}
+
+\begin{block}{License}
+Edward is open-source licensed under the Apache License, version 2.0.
+\end{block}
+
+\begin{block}{References}
+\small{
+\bibliographystyle{unsrt}
+\bibliography{BIB}
+}
+\end{block}
+
+\end{column} 
+%-------------------------------------------------------------------------------
+
+\end{columns} % End of all the columns in the poster
+\end{frame}   % End of the enclosing frame
+\end{document}
