@@ -1,0 +1,466 @@
+\documentclass[10pt,
+               xcolor={usenames,dvipsnames},
+               hyperref={colorlinks,linktoc=all,citecolor=Plum,linkcolor=MidnightBlue,urlcolor=MidnightBlue},noamssymb]{beamer}
+\input{preamble/preamble}
+\input{preamble/preamble_acronyms}
+\input{preamble/preamble_math}
+\input{preamble/preamble_tikz}
+
+\usepackage{subfigure}
+\definecolor{light}{RGB}{199, 153, 199}
+\definecolor{dark}{RGB}{143, 39, 143}
+\definecolor{gray80}{gray}{0.8}
+
+\usepackage{natbib}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamercolor{itemize item}{fg=black!67}
+\setbeamercolor*{enumerate item}{fg=black!67}
+\setbeamercolor*{enumerate subitem}{fg=black!67}
+\setbeamercolor*{enumerate subsubitem}{fg=black!67}
+
+\definecolor{charcoal}{HTML}{222222}
+\definecolor{snow}{HTML}{F9F9F9}
+
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{normal text}{fg=charcoal}
+\setbeamercolor{structure}{fg=charcoal}
+
+\newenvironment{changemargin}[1]{
+  \begin{list}{}{
+    \setlength{\topsep}{0pt}
+    \setlength{\leftmargin}{#1}
+    \setlength{\rightmargin}{#1}
+    \setlength{\listparindent}{\parindent}
+    \setlength{\itemindent}{\parindent}
+    \setlength{\parsep}{\parskip}
+  }
+  \item[]}{\end{list}}
+
+\title{}
+\begin{document}
+
+\begin{frame}[plain,t]
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=0.50cm, yshift=-3.00cm, anchor=north west] at (current page.north west) {
+    \begin{tabular}{l}
+    {\Large\bf Why Aren't You Using}\\[2ex]
+    {\Large\bf Probabilistic Programming?}\\[2ex]
+    {\large }\\[4ex]
+    Dustin Tran\\
+    Columbia University \\[4ex]
+    \end{tabular}
+  };
+  \node [xshift=-1.50cm, yshift=3.00cm, anchor=mid east] at (current page.south
+  east) {
+\includegraphics[width=0.25\textwidth]{img/edward.png}
+  };
+  \node [xshift=-0.25cm, yshift=0.5cm, anchor=mid east] at (current page.south
+  east) {
+    \includegraphics[width=0.22\textwidth]{img/columbia.pdf}
+  };
+\end{tikzpicture}
+\end{frame}
+
+% + why as in current problems in ppls
+% + what the languages have led to and edward
+% + current limitaitons, and why you shouldn't use probabilistic
+% programming yet
+
+\begin{frame}[plain]
+\footnotesize
+\begin{center}
+\begin{tabular}{ccccc}
+\includegraphics[width=18mm]{img/alp.png} &
+\includegraphics[width=18mm]{img/adji.jpg} &
+\includegraphics[width=18mm]{img/dave.jpg} &
+\includegraphics[width=18mm]{img/dawen.jpg} &
+\includegraphics[width=18mm]{img/eugene.jpg} \\
+Alp Kucukelbir & Adji Dieng & Dave Moore & Dawen Liang & Eugene Brevdo \\
+\end{tabular}
+
+\vspace{-2ex}
+
+\begin{tabular}{ccccc}
+\includegraphics[width=18mm]{img/ian.jpg} &
+\includegraphics[width=18mm]{img/josh.jpg} &
+\includegraphics[width=18mm]{img/maja.png} &
+\includegraphics[width=18mm]{img/brian.png} &
+\\
+% \includegraphics[width=18mm]{img/srinivas.png} \\
+Ian Langmore & Josh Dillon & Maja Rudolph & Brian Patton & Srinivas Vasudevan \\
+\end{tabular}
+
+\vspace{-2ex}
+
+\begin{tabular}{ccccc}
+\includegraphics[width=18mm]{img/alex.jpg} &
+\includegraphics[width=20mm]{img/matt.jpg} &
+\includegraphics[width=18mm]{img/blei.jpg} &
+\includegraphics[width=18mm]{img/kevin.jpg} &
+\includegraphics[width=18mm]{img/rif.png}\\
+Alex Alemi & Matt Hoffman & David Blei & Kevin Murphy & Rif Saurous\\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{What is probabilistic programming?}
+\textbf{Probabilistic programs reify models from mathematics to
+physical objects.}
+\begin{itemize}
+\vspace{-2ex}
+\item
+Each model is equipped with memory (``bits'',
+floating point, storage) and computation
+(``flops'', scalability, communication).
+% from Gauss and Fisher to Turing and Church
+\end{itemize}
+\textbf{Anything you do lives in the world of probabilistic programming.}
+\begin{itemize}
+\item
+Any computable model.
+\item
+Any computable inference algorithm.
+\item
+Any computable application.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+{\Huge
+\textit{\textbf{Simulation hypothesis.} \\
+``The universe is a simulation from a computer program.''
+}
+\\[2ex]
+{\Large
+(Zuse, Schmidhuber, Bostrom, Musk)
+}}
+\end{center}
+\end{frame}
+% dogmatic puritanical computability to good software desgin with modular code and rich abstractions encapsulation ... to this we deceloped edward in fsct edward was originally ...
+
+\begin{frame}
+\vspace{-20ex}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{img/query.pdf}
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-6.25cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Tenenbaum+Mansinghka NIPS 2017 tutorial]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-0.75cm, yshift=0.8cm, anchor=north west] at (current
+  page.north west) {
+\includegraphics[width=0.8\textwidth]{img/blog.png}
+  };
+  \node [xshift=-0.5cm, yshift=-3.0cm, anchor=north west] at (current
+  page.north west) {
+\includegraphics[width=0.8\textwidth]{img/repo-1.png}
+  };
+  \node [xshift=-0.5cm, yshift=-6.0cm, anchor=north west] at (current
+  page.north west) {
+\includegraphics[width=0.8\textwidth]{img/repo-2.png}
+  };
+  \node [xshift=5.0cm, yshift=0.1cm, anchor=north west] at (current
+  page.north west) {
+\includegraphics[width=0.8\textwidth]{img/repo-3.png}
+  };
+  \node [xshift=5.5cm, yshift=-3.0cm, anchor=north west] at (current
+  page.north west) {
+\includegraphics[width=0.8\textwidth]{img/repo-4.png}
+  };
+  \node [xshift=5.5cm, yshift=-6.0cm, anchor=north west] at (current
+  page.north west) {
+\includegraphics[width=0.8\textwidth]{img/repo-5.png}
+  };
+\end{tikzpicture}
+\end{frame}
+
+% \begin{frame}
+% \begin{tikzpicture}[remember picture,overlay]
+%   \node [xshift=-0.75cm, yshift=0.8cm, anchor=north west] at (current
+%   page.north west) {
+% \includegraphics[width=0.8\textwidth]{img/blog.png}
+%   };
+%   \node [xshift=-0.5cm, yshift=-3.0cm, anchor=north west] at (current
+%   page.north west) {
+% \includegraphics[width=0.8\textwidth]{img/paper-1.png}
+%   };
+%   \node [xshift=-0.5cm, yshift=-6.0cm, anchor=north west] at (current
+%   page.north west) {
+% \includegraphics[width=0.8\textwidth]{img/neural-architecture.png}
+%   };
+%   \node [xshift=5.0cm, yshift=0.1cm, anchor=north west] at (current
+%   page.north west) {
+% \includegraphics[width=0.8\textwidth]{img/paper-2.png}
+%   };
+%   \node [xshift=5.5cm, yshift=-3.0cm, anchor=north west] at (current
+%   page.north west) {
+% \includegraphics[width=0.8\textwidth]{img/paper-3.png}
+%   };
+%   \node [xshift=5.5cm, yshift=-6.0cm, anchor=north west] at (current
+%   page.north west) {
+% \includegraphics[width=0.8\textwidth]{img/paper-4.png}
+%   };
+% \end{tikzpicture}
+% % replace with
+% % stochastic depth
+% % gating
+% \end{frame}
+
+\begin{frame}[t]
+\frametitle{The Myth of Probabilistic Programming}
+\vspace{16ex}
+
+\begin{center}
+{\Large
+\bf
+Programming is infeasible if a core operation \\[1.25ex]
+in the language is
+NP-hard.
+}
+% (or worse!)
+\end{center}
+
+\vspace{16ex}
+For high-dimensional problems + modern probabilistic models, we
+haven't solved automated inference.
+\end{frame}
+
+\begin{frame}
+\begin{center}
+\vspace{-2.5ex}
+\includegraphics[width=1.0\textwidth]{img/github.png}
+\\[-1.5ex]
+\includegraphics[width=1.0\textwidth]{img/forum.png}
+\\[-3ex]
+\includegraphics[width=1.0\textwidth]{img/gitter.png}
+\\[2ex]
+\end{center}
+\text{
+We have an active community of several thousand users \& many
+contributors.
+}
+\end{frame}
+
+\begin{frame}
+\frametitle{Language: Computational Graphs w/ Random Variables}
+Edward's language augments computational graphs with an abstraction
+for random variables.
+Each random variable $\mbx$ is associated to a tensor $\mbx^*$,
+$\mbx^*\sim p(\mbx\g\theta^*)$.
+
+\vspace{-1.0ex}
+\includegraphics[height=0.20\textwidth]{img/random_variables.png}
+
+Unlike \texttt{tf.Tensor}s, \texttt{ed.RandomVariable}s
+carry an explicit density with methods
+such as \texttt{log\_prob()} and \texttt{sample()}.
+
+For implementation, we wrap all TensorFlow Distributions and call
+\texttt{sample} to produce the associated tensor.
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-2.2cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Tran+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Language Example}
+\begin{center}
+\includegraphics[width=1.05\textwidth]{img/ssm-program.png}
+\end{center}
+
+\vspace{1ex}
+State space model for sequences
+$\mathbf{x}=[\mathbf{x}_1,\ldots,\mathbf{x}_T]\in\mathbb{R}^{T\times D}$.
+\vspace{2ex}
+
+Edward's language enables a \emph{calculus} on random variables.
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-2.25cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Dillon+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Inference as Stochastic Graph Optimization}
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{img/inference-graph.png}
+\end{center}
+
+All \texttt{Inference} has (at least) two inputs: \\
+\begin{enumerate}
+\vspace{-3ex}
+\item
+\red{red} aligns latent variables and posterior approximations;
+\item
+\blue{blue} aligns observed variables and realizations.
+\end{enumerate}
+
+\begin{center}
+\vspace{-2.0ex}
+\includegraphics[height=0.05\textheight]{img/inference.png}
+\end{center}
+
+\texttt{Inference} has class methods to finely control the algorithm.
+Edward is as fast as handwritten TensorFlow at runtime.
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-3.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\small \url{edwardlib.org/api}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Composable \& Hybrid Inference}
+
+\begin{center}
+\vspace{-2ex}
+\includegraphics[width=1.0\textwidth]{img/em.png}
+\vspace{2ex}
+
+\includegraphics[width=1.0\textwidth]{img/ep.png}
+\end{center}
+
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-9.2cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Neal \& Hinton 1993; Minka 2001; Gelman+ 2017; Hasenclever+ 2015]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Non-Bayesian Inference}
+\begin{center}
+\vspace{-2ex}
+\includegraphics[width=0.9\textwidth]{img/gan_example.png}
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-4.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Dayan+ 1995; Gutmann+ 2010]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Taxonomy of Inference}
+\vspace{-1ex}
+\begin{center}
+\includegraphics[width=1.05\textwidth]{img/taxonomy.png}
+\end{center}
+\vspace{10ex}
+Nodes are Edward classes. Arrows denote inheritance.
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-3.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\small \url{edwardlib.org/api}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Why You Shouldn't Use Probabilistic Programming}
+\begin{itemize}
+\item
+\textbf{Object-oriented inference} has a high cognitive burden.
+\item
+Sometimes it's easier to \textbf{build the loss function} than it
+is to build the program.
+(e.g. autoregressive models)
+\item
+\textbf{Programmable inference is hard}. Matt and I spent a year on
+covering use cases. But we didn't cover all of them.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+{\Large\bf Why You Will Use Probabilistic Programming}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Distributed, Compiled, Accelerated Systems}
+\begin{center}
+\vspace{-1.25ex}
+\includegraphics[width=0.8\textwidth]{img/tpu-pods.png}
+\end{center}
+
+\vspace{3ex}
+Probabilistic programming over multiple machines.
+XLA compiler optimization and TPUs.
+% Turing-complete meta language for inference.
+More flexible programmable inference.
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Dynamic Graphs}
+\begin{center}
+\vspace{-1.25ex}
+\includegraphics[width=1.0\textwidth]{img/pyro.png}
+\\[-8.75ex]
+\includegraphics[width=1.0\textwidth]{img/probtorch.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Distributions Backend}
+\vspace{-3ex}
+\input{tikz/pixelcnn}
+
+\textbf{TensorFlow Distributions} consists of a large collection of
+distributions. \texttt{Bijector} enable efficient, composable
+manipulation of probability distributions.
+% pixelcnn, autoregressive flows, reversible resnet
+
+Pytorch PPLs are consolidating on a backend for distributions.
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-2.25cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Dillon+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+% doc, examples, tutorials. numericsl stability, etc maybe included as why
+
+\begin{frame}
+\frametitle{References}
+\begin{center}
+\includegraphics[width=0.3\textwidth]{img/edward.png}
+\\
+\large \url{edwardlib.org}
+\end{center}
+\vspace{1ex}
+
+\begin{itemize}
+\item
+Edward: A library for probabilistic modeling, inference, and
+criticism. \\
+\gray{arXiv preprint arXiv:1610.09787, 2016.}
+\item
+Deep probabilistic programming. \\
+\gray{International Conference on Learning Representations, 2017.}
+\item
+TensorFlow Distributions. \\
+\gray{arXiv preprint arXiv:1711.10604, 2017.}
+\end{itemize}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,15 @@
+\begin{lstlisting}[language=python]
+def pixelcnn_dist(params, x_shape=(32, 32, 3)):
+  def _logit_func(features):
+    # single autoregressive step on observed features
+    logits = pixelcnn(features)
+    return logits
+  logit_template = tf.make_template("pixelcnn", _logit_func)
+  make_dist = lambda x: tfd.Independent(tfd.Bernoulli(logit_template(x)))
+  return tfd.Autoregressive(make_dist, tf.reduce_prod(x_shape)))
+
+x = pixelcnn_dist()
+loss = -tf.reduce_sum(x.log_prob(images))
+train = tf.train.AdamOptimizer().minimize(loss)  # run for training
+generate = x.sample()  # run for generation
+\end{lstlisting}

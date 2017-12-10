@@ -1,0 +1,731 @@
+\documentclass[10pt,
+               xcolor={usenames,dvipsnames},
+               hyperref={colorlinks,linktoc=all,citecolor=Plum,linkcolor=MidnightBlue,urlcolor=MidnightBlue},noamssymb]{beamer}
+\input{preamble/preamble}
+\input{preamble/preamble_acronyms}
+\input{preamble/preamble_math}
+\input{preamble/preamble_tikz}
+
+\usepackage{subfigure}
+\definecolor{light}{RGB}{199, 153, 199}
+\definecolor{dark}{RGB}{143, 39, 143}
+\definecolor{gray80}{gray}{0.8}
+
+\usepackage{natbib}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamercolor{itemize item}{fg=black!67}
+\setbeamercolor*{enumerate item}{fg=black!67}
+\setbeamercolor*{enumerate subitem}{fg=black!67}
+\setbeamercolor*{enumerate subsubitem}{fg=black!67}
+
+\definecolor{charcoal}{HTML}{222222}
+\definecolor{snow}{HTML}{F9F9F9}
+
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{normal text}{fg=charcoal}
+\setbeamercolor{structure}{fg=charcoal}
+
+\newenvironment{changemargin}[1]{
+  \begin{list}{}{
+    \setlength{\topsep}{0pt}
+    \setlength{\leftmargin}{#1}
+    \setlength{\rightmargin}{#1}
+    \setlength{\listparindent}{\parindent}
+    \setlength{\itemindent}{\parindent}
+    \setlength{\parsep}{\parskip}
+  }
+  \item[]}{\end{list}}
+
+\title{}
+\begin{document}
+
+\begin{frame}[plain,t]
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=0.50cm, yshift=-3.00cm, anchor=north west] at (current page.north west) {
+    \begin{tabular}{l}
+    {\Large\bf An Overview of Edward:}\\[1ex]
+    {\Large\bf A Probabilistic Programming System}\\[2ex]
+    {\large }\\[4ex]
+    Dustin Tran\\
+    Columbia University \\[4ex]
+    \end{tabular}
+  };
+  \node [xshift=-1.50cm, yshift=3.00cm, anchor=mid east] at (current page.south
+  east) {
+\includegraphics[width=0.25\textwidth]{img/edward.png}
+  };
+  \node [xshift=-0.25cm, yshift=0.5cm, anchor=mid east] at (current page.south
+  east) {
+    \includegraphics[width=0.22\textwidth]{img/columbia.pdf}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain]
+\footnotesize
+\begin{center}
+\begin{tabular}{ccc}
+\includegraphics[width=22mm]{img/alp.png} &
+\includegraphics[width=22mm]{img/adji.jpg} &
+\includegraphics[width=22mm]{img/dawen.jpg} \\
+Alp Kucukelbir & Adji Dieng & Dawen Liang \\
+\end{tabular}
+
+\vspace{-2ex}
+
+\begin{tabular}{cccc}
+\includegraphics[width=22mm]{img/eugene.jpg} &
+\includegraphics[width=22mm]{img/maja.png} &
+\includegraphics[width=22mm]{img/matt.jpg} &
+\includegraphics[width=22mm]{img/ranganath.jpg} \\
+Eugene Brevdo & Maja Rudolph & Matt Hoffman & Rajesh Ranganath \\
+\end{tabular}
+
+\vspace{-2ex}
+
+\begin{tabular}{cccc}
+\includegraphics[width=20mm]{img/gelman.png} &
+\includegraphics[width=20mm]{img/blei.jpg} &
+\includegraphics[width=20mm]{img/kevin.jpg} &
+\includegraphics[width=20mm]{img/rif.png}\\
+Andrew Gelman & David Blei & Kevin Murphy & Rif Saurous\\
+\end{tabular}
+\end{center}
+\end{frame}
+
+% \begin{frame}[plain,t]
+% \vspace{2ex}
+% \begin{center}
+% \includegraphics[width=0.67\textwidth]{img/nytimes.png}
+% \\[2ex]
+% Topics found in 1.8M articles from the New York Times
+% \end{center}
+% \begin{tikzpicture}[remember picture,overlay]
+%   \node [xshift=-5.0cm, yshift=0.4cm, anchor=south west] at (current
+%   page.south east) {
+% \gray{\small [Hoffman, Blei, Wang, Paisley 2013]}
+%   };
+% \end{tikzpicture}
+% \end{frame}
+
+\begin{frame}[plain,t]
+\vspace{2ex}
+\begin{center}
+\includegraphics[width=0.9\textwidth]{img/taxis.png}
+\\[2ex]
+Exploratory analysis of 1.7M taxi trajectories, in Stan
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-3.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Kucukelbir+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain,t]
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=0.25cm, yshift=-1.5cm, anchor=north west] at (current
+  page.north west) {
+\includegraphics[width=0.6\textwidth]{img/lotka_volterra_plot.png}
+  };
+  \node [xshift=6.75cm, yshift=-2.0cm, anchor=north west] at (current
+  page.north west) {
+\includegraphics[width=0.5\textwidth]{img/lotka_volterra_inference.png}
+  };
+  \node [xshift=2.5cm, yshift=1.0cm, anchor=south west] at (current
+  page.south west) {
+Simulators of 100K time series in ecology, in Edward
+  };
+  \node [xshift=-2.25cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Tran+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain,t]
+\vspace{2.0cm}
+\begin{center}
+\includegraphics[width=0.37\textwidth]{img/dim_graphical_model.png}
+\hfill
+\includegraphics[width=0.45\textwidth]{img/dim_samples.png}
+\\[1.5cm]
+Generation \& compression of 10M colored 32x32 images, in Edward
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-5.75cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Tran+ 2017; fig from Van der Oord+ 2016]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain,t]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{img/genetics.png}
+\\[2ex]
+Cause and effect of 1.6B genetic measurements, in Edward
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-5.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [in preparation; fig from Gopalan+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{img/basketball.png}
+\\[2ex]
+Spatial analysis of 150,000 shots from 308 NBA players, in Edward
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-2.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Dieng+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Probabilistic machine learning}
+
+\begin{itemize}
+\item A probabilistic model is a joint distribution of hidden
+  variables $\mbz$ and observed variables $\mbx$,
+  \begin{align*}
+    p(\mbz, \mbx).
+  \end{align*}
+\item Inference about the unknowns is through the \textbf{posterior},
+  the conditional distribution of the hidden variables given the observations
+  \begin{align*}
+    p(\mbz \g \mbx) = \frac{p(\mbz, \mbx)}{p(\mbx)}.
+  \end{align*}
+\item For most interesting models, the denominator is not tractable.
+  We appeal to \textbf{approximate posterior inference}.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Variational inference}
+
+\begin{center}
+  \includegraphics[width=0.75\textwidth]{img/vi_cartoon.pdf}
+\end{center}
+
+\vspace{0.1in}
+
+\begin{itemize}
+\item VI solves \textbf{inference} with \textbf{optimization}.
+\item Posit a \textbf{variational family} of distributions over the
+  latent variables,
+  \begin{align*}
+    q(\mbz; \mbnu)
+  \end{align*}
+\item Fit the \textbf{variational parameters} $\mbnu$ to be close (in
+  KL) to the exact posterior.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{What is probabilistic programming?}
+\textbf{Probabilistic programs reify models from mathematics to
+physical objects.}
+\begin{itemize}
+\vspace{-2ex}
+\item
+Each model is equipped with memory (``bits'',
+floating point, storage) and computation
+(``flops'', scalability, communication).
+% from Gauss and Fisher to Turing and Church
+\end{itemize}
+\textbf{Anything you do lives in the world of probabilistic programming.}
+\begin{itemize}
+\item
+Any computable model.
+
+\gray{ex.
+graphical models; neural networks; SVMs; stochastic processes.
+}
+\item
+Any computable inference algorithm.
+
+\gray{ex.
+automated inference;
+model-specific algorithms;
+inference within inference (learning to learn).
+}
+\item
+Any computable application.
+
+\gray{ex.
+exploratory analysis;
+object recognition;
+code generation;
+causality.
+}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,t]
+\begin{center}
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-0.5cm, yshift=0.0cm, anchor=north west] at (current
+  page.north west) {
+\includegraphics[width=1.25\textwidth]{img/wood2015nips.png}
+  };
+  \node [xshift=-3.25cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [fig. from Frank Wood]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{George E.P. Box (1919 - 2013)}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+    \begin{center}
+     \includegraphics[width=\columnwidth]{img/box.jpg}
+     \end{center}
+\end{column}
+\begin{column}{0.5\textwidth}
+An iterative process for science:
+\\[1ex]
+\begin{enumerate}
+\item Build a model of the science
+\\[1ex]
+\item Infer the model given data
+\\[1ex]
+\item Criticize the model given data
+\end{enumerate}
+\end{column}
+\end{columns}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-8.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Box \& Hunter 1962, 1965; Box \& Hill 1967; Box 1976, 1980]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Box's Loop}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-1cm, yshift=-2.00cm, anchor=north west] at (current page.north west) {
+\includegraphics[width=1.4\textwidth]{img/model_infer_criticize.png}
+  };
+  \node [xshift=3.4cm, yshift=-8.0cm, anchor=north west] at (current page.north west) {
+Edward is a library designed around this loop.
+  };
+  \node [xshift=0cm, yshift=-5.50cm, anchor=north west] at (current page.north west) {
+  };
+  \node [xshift=-4.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Box 1976, 1980; Blei 2014]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+\vspace{-3.5ex}
+\includegraphics[width=1.0\textwidth]{img/github.png}
+\\[-1ex]
+\includegraphics[width=1.0\textwidth]{img/forum.png}
+\\[-3ex]
+\includegraphics[width=1.0\textwidth]{img/gitter.png}
+\\[2ex]
+\end{center}
+\text{
+We have an active community of several thousand users \& many
+contributors.
+}
+\end{frame}
+
+% \begin{frame}
+% \frametitle{Who is Using Edward?}
+% {\large Users}
+% \begin{enumerate}
+% \item
+% Machine learning enthusiasts, data scientists, business analysts \\
+% (\emph{ex. hierarchical GLMs, mixture models, MAP, MCMC, ...})
+% \item
+% Probabilistic graphical modeling community \\
+% (\emph{ex. latent Dirichlet allocation, variational inference, Gibbs})
+% \item
+% Bayesian deep learning community \\
+% (\emph{ex. deep generative models, Bayesian NNs, black box inference})
+% \end{enumerate}
+
+% {\large Developers}
+% \begin{enumerate}
+% \item
+% David Blei's group
+% \item
+% Google Brain
+% (\emph{design})
+% \item
+% Matt Hoffman (\emph{conjugacy}),
+% Emily Fox's group
+% (\emph{time series + SGMCMC}),
+% Justin Bayer (\emph{stochastic RNNs}),
+% John Pearson (\emph{neuroscience}),
+% a few Master's/Ph.D. students.
+% \item
+% Collaboration continues to evolve. Contact us! (+visit the Forum)
+% \end{enumerate}
+% \end{frame}
+
+\begin{frame}
+\frametitle{Model}
+Edward's language augments computational graphs with an abstraction
+for random variables.
+Each random variable $\mbx$ is associated to a tensor $\mbx^*$,
+$\mbx^*\sim p(\mbx\g\theta^*)$.
+
+\vspace{-1.0ex}
+\includegraphics[height=0.20\textwidth]{img/random_variables.png}
+
+Unlike \texttt{tf.Tensor}s, \texttt{ed.RandomVariable}s
+carry an explicit density with methods
+such as \texttt{log\_prob()} and \texttt{sample()}.
+
+For implementation, we wrap all TensorFlow Distributions and call
+\texttt{sample} to produce the associated tensor.
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-2.2cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Tran+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Example: Beta-Bernoulli}
+Consider a Beta-Bernoulli model,
+\begin{align*}
+p(\mbx, \theta) =
+\operatorname{Beta}(\theta\g 1, 1)
+\prod_{n=1}^{50} \operatorname{Bernoulli}(x_n\g \theta),
+\end{align*}
+where $\theta$
+is a probability shared across 50 data points $\mbx\in\{0,1\}^{50}$.
+\begin{center}
+\vspace{-2ex}
+\includegraphics[height=0.175\textwidth]{img/beta-bernoulli.png}
+\end{center}
+Fetching $\mbx$ from the graph generates a binary vector of $50$ elements.
+
+All computation is represented on the graph, enabling us to leverage model structure during inference.
+\end{frame}
+
+\begin{frame}
+\frametitle{Example: Variational Auto-Encoder for Binarized MNIST}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=0.4cm, yshift=-0.8cm, anchor=north west] at (current page.north west) {
+   \includegraphics[width=0.5\columnwidth]{img/vae_graphical_model_01.png}
+  };
+  \node [xshift=-5.75cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Kingma \& Welling 2014; Rezende+ 2014]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Example: Variational Auto-Encoder for Binarized MNIST}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=0.5cm, yshift=-1.0cm, anchor=north west] at (current page.north west) {
+   \includegraphics[width=0.18\columnwidth]{img/vae_graphical_model.png}
+  };
+  \node [xshift=2.6cm, yshift=-1.7cm, anchor=north west] at (current page.north west) {
+\includegraphics[height=0.14\textheight]{img/vae_decoder.png}
+  };
+  \node [xshift=2.6cm, yshift=-5.8cm, anchor=north west] at (current page.north west) {
+\includegraphics[height=0.18\textheight]{img/vae_encoder.png}
+  };
+  \node [xshift=-5.75cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Kingma \& Welling 2014; Rezende+ 2014]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Example: Variational Auto-Encoder for Binarized MNIST}
+\vspace{10ex}
+\begin{center}
+\gray{\Large [Demo]} \\[3ex]
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Example: Bayesian neural network for classification}
+\begin{center}
+\includegraphics[height=0.3\textwidth]{img/bayesian_nn_graph.png}
+\\[2.5ex]
+\includegraphics[height=0.19\textwidth]{img/bayesian_nn_program.png}
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-9.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Denker+ 1987; MacKay 1992; Hinton \& Van Camp, 1993; Neal 1995]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[plain]
+\frametitle{Example: Gaussian process classification}
+\begin{center}
+\includegraphics[height=0.3\textwidth]{img/gp-classification.png}
+\\[3.0ex]
+\includegraphics[height=0.12\textwidth]{img/gp-classification-code.png}
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-7.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Rasmussen \& Williams, 2006; fig from Hensman+ 2013]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Inference}
+Given
+\begin{itemize}
+\item Data $\mbx_{\text{train}}$.
+\item
+Model $p(\mbx, \mbz, \mbbeta)$ of
+observed variables $\mbx$ and latent variables $\mbz, \mbbeta$.
+\end{itemize}
+Goal
+\begin{itemize}
+\item
+Calculate posterior distribution
+\begin{equation*}
+p(\mbz, \mbbeta\mid\mbx_{\text{train}}) =
+\frac{p(\mbx_{\text{train}}, \mbz, \mbbeta)}{\int
+p(\mbx_{\text{train}}, \mbz, \mbbeta) \d\mbz\d\mbbeta}.
+\end{equation*}
+\end{itemize}
+\vspace{2ex}
+This is the key problem in Bayesian inference.
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-4.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\small \url{edwardlib.org/tutorials}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Inference}
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{img/inference-graph.png}
+\end{center}
+
+All \texttt{Inference} has (at least) two inputs: \\
+\begin{enumerate}
+\vspace{-3ex}
+\item
+\red{red} aligns latent variables and posterior approximations;
+\item
+\blue{blue} aligns observed variables and realizations.
+\end{enumerate}
+
+\begin{center}
+\vspace{-2.0ex}
+\includegraphics[height=0.05\textheight]{img/inference.png}
+\end{center}
+
+\texttt{Inference} has class methods to finely control the algorithm.
+Edward is fast as handwritten TensorFlow at runtime.
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-3.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\small \url{edwardlib.org/api}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Inference}
+Variational inference. It uses a variational model.
+\begin{center}
+\vspace{-2.0ex}
+\includegraphics[height=0.18\textheight]{img/inference_variational.png}
+\end{center}
+Monte Carlo. It uses an Empirical approximation.
+\begin{center}
+\includegraphics[height=0.17\textheight]{img/inference_monte.png}
+\end{center}
+
+Conjugacy \& exact inference. It uses symbolic algebra on the graph.
+\end{frame}
+
+\begin{frame}
+\frametitle{Inference: Composing Inference}
+Core to Edward's design is that inference can be written as a collection of separate inference programs.
+
+For example, here is variational EM.
+
+\begin{center}
+\includegraphics[height=0.275\textheight]{img/composing.png}
+\end{center}
+
+We can also write message passing algorithms, which work over a collection of local inference problems. This includes expectation propagation.
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-9.2cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Neal \& Hinton 1993; Minka 2001; Gelman+ 2017; Hasenclever+ 2015]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Non-Bayesian Methods: GANs}
+GANs posit a generative process,
+\begin{align*}
+\mbepsilon &\sim \text{Normal}(0, 1) \\
+\mbx &= G(\mbepsilon;\theta)
+\end{align*}
+for some generative network $G$.
+
+Training uses a discriminative network $D$ via the
+optimization problem
+\begin{equation*}
+\min_\theta \max_\phi
+\mathbb{E}_{p^*(\mbx)} [ \log D(\mbx; \phi) ]
++ \mathbb{E}_{p(\mbx; \theta)} [ \log (1 - D(\mbx; \phi)) ]
+\end{equation*}
+The generator tries to generate samples indistinguishable from true data.
+
+The discriminator tries to discriminate samples from the generator and
+samples from the true data.
+
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-3.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Goodfellow+ 2014]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Example: Generative Adversarial Network for MNIST}
+\vspace{10ex}
+\begin{center}
+\gray{\Large [Demo]} \\[3ex]
+{\large \url{http://edwardlib.org/tutorials/gan}}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Non-Bayesian Methods: GANs}
+\begin{center}
+\vspace{-2ex}
+\includegraphics[width=1.0\textwidth]{img/gan_example.png}
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-3.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Goodfellow+ 2014]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Non-Bayesian Methods: GANs}
+\begin{center}
+\vspace{-2ex}
+\includegraphics[width=1.1\textwidth]{img/ganw_example.png}
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-4.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Arjovsky+ 2017; Gulrajani+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+{\Large\bf Current Work}
+\end{center}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Dynamic Graphs}
+\begin{center}
+\vspace{-1.25ex}
+\includegraphics[width=1.0\textwidth]{img/pyro.png}
+\\[-8.75ex]
+\includegraphics[width=1.0\textwidth]{img/probtorch.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Distributions Backend}
+\vspace{-3ex}
+\input{tikz/pixelcnn}
+
+\textbf{TensorFlow Distributions} consists of a large collection of
+distributions. \texttt{Bijector} enable efficient, composable
+manipulation of probability distributions.
+% pixelcnn, autoregressive flows, reversible resnet
+
+Pytorch PPLs are consolidating on a backend for distributions.
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-2.25cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Dillon+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Distributed, Compiled, Accelerated Systems}
+\begin{center}
+\vspace{-1.25ex}
+\includegraphics[width=0.8\textwidth]{img/tpu-pods.png}
+\end{center}
+
+\vspace{3ex}
+Probabilistic programming over multiple machines.
+XLA compiler optimization and TPUs.
+% Turing-complete meta language for inference.
+More flexible programmable inference.
+\end{frame}
+
+\begin{frame}
+\frametitle{References}
+\begin{center}
+\includegraphics[width=0.3\textwidth]{img/edward.png}
+\\
+\large \url{edwardlib.org}
+\end{center}
+\vspace{1ex}
+
+\begin{itemize}
+\item
+Edward: A library for probabilistic modeling, inference, and
+criticism. \\
+\gray{arXiv preprint arXiv:1610.09787, 2016.}
+\item
+Deep probabilistic programming. \\
+\gray{International Conference on Learning Representations, 2017.}
+\item
+TensorFlow Distributions. \\
+\gray{arXiv preprint arXiv:1711.10604, 2017.}
+\end{itemize}
+\end{frame}
+
+\end{document}
