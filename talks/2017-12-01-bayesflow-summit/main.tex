@@ -1,0 +1,785 @@
+\documentclass[10pt,
+               xcolor={usenames,dvipsnames},
+               hyperref={colorlinks,linktoc=all,citecolor=Plum,linkcolor=MidnightBlue,urlcolor=MidnightBlue},noamssymb]{beamer}
+\input{preamble/preamble}
+\input{preamble/preamble_acronyms}
+\input{preamble/preamble_math}
+\input{preamble/preamble_tikz}
+
+\usepackage{subfigure}
+\definecolor{light}{RGB}{199, 153, 199}
+\definecolor{dark}{RGB}{143, 39, 143}
+\definecolor{gray80}{gray}{0.8}
+
+\usepackage{natbib}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamercolor{itemize item}{fg=black!67}
+\setbeamercolor*{enumerate item}{fg=black!67}
+\setbeamercolor*{enumerate subitem}{fg=black!67}
+\setbeamercolor*{enumerate subsubitem}{fg=black!67}
+
+\definecolor{charcoal}{HTML}{222222}
+\definecolor{snow}{HTML}{F9F9F9}
+
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{normal text}{fg=charcoal}
+\setbeamercolor{structure}{fg=charcoal}
+
+\newenvironment{changemargin}[1]{
+  \begin{list}{}{
+    \setlength{\topsep}{0pt}
+    \setlength{\leftmargin}{#1}
+    \setlength{\rightmargin}{#1}
+    \setlength{\listparindent}{\parindent}
+    \setlength{\itemindent}{\parindent}
+    \setlength{\parsep}{\parskip}
+  }
+  \item[]}{\end{list}}
+
+\title{}
+\begin{document}
+
+\begin{frame}[plain,t]
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=0.50cm, yshift=-3.00cm, anchor=north west] at (current page.north west) {
+    \begin{tabular}{l}
+    {\Large\bf Everything You Didn't Know About Edward}\\[2ex]
+    % {\Large\bf with Edward}\\[2ex]
+    {\large }\\[4ex]
+    Dustin Tran\\
+    Columbia University \\[4ex]
+    \end{tabular}
+  };
+  \node [xshift=-1.50cm, yshift=3.00cm, anchor=mid east] at (current page.south
+  east) {
+\includegraphics[width=0.25\textwidth]{img/edward.png}
+  };
+  % \node [xshift=-1.25cm, yshift=0.5cm, anchor=mid east] at (current page.south
+  % east) {
+  %   \includegraphics[width=0.22\textwidth]{img/columbia.pdf}
+  % };
+  % \node [xshift=1.25cm, yshift=-0.9cm, anchor=mid east] at (current page.south
+  % east) {
+  %   \includegraphics[width=0.40\textwidth]{img/openai.pdf}
+  % };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+{\Large\bf Basics}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{What is probabilistic programming?}
+\textbf{Probabilistic programs reify models from mathematics to
+physical objects.}
+\begin{itemize}
+\vspace{-2ex}
+\item
+Each model is equipped with memory (``bits'',
+floating point, storage) and computation
+(``flops'', scalability, communication).
+% from Gauss and Fisher to Turing and Church
+\end{itemize}
+\textbf{Anything you do lives in the world of probabilistic programming.}
+\begin{itemize}
+\item
+Any computable model.
+
+\gray{ex.
+graphical models; neural networks; SVMs; stochastic processes.
+}
+\item
+Any computable inference algorithm.
+
+\gray{ex.
+automated inference;
+model-specific algorithms;
+inference within inference (learning to learn).
+}
+\item
+Any computable application.
+
+\gray{ex.
+exploratory analysis;
+object recognition;
+code generation;
+causality.
+}
+\end{itemize}
+\end{frame}
+
+% \begin{frame}
+% \begin{center}
+% {\Huge
+% \textit{\textbf{Simulation hypothesis.} \\
+% ``The universe is a simulation from a computer program.''
+% }
+% \\[2ex]
+% {\Large
+% (Zuse, Bostrom, Schmidhuber, Musk)
+% }}
+% \end{center}
+% % \vspace{3ex}
+% % Probabilistic modeling is about positing a family of distribution and
+% % finding the one true distribution.
+% % \\[1ex]
+% % Probabilistic programming is about finding the one true program.
+% \end{frame}
+
+% \begin{frame}
+% \frametitle{George E.P. Box (1919 - 2013)}
+% \begin{columns}
+% \begin{column}{0.5\textwidth}
+%     \begin{center}
+%      \includegraphics[width=\columnwidth]{img/box.jpg}
+%      \end{center}
+% \end{column}
+% \begin{column}{0.5\textwidth}
+% An iterative process for science:
+% \\[1ex]
+% \begin{enumerate}
+% \item Build a model of the science
+% \\[1ex]
+% \item Infer the model given data
+% \\[1ex]
+% \item Criticize the model given data
+% \end{enumerate}
+% \end{column}
+% \end{columns}
+% \begin{tikzpicture}[remember picture,overlay]
+%   \node [xshift=-8.0cm, yshift=0.4cm, anchor=south west] at (current
+%   page.south east) {
+% \gray{\small [Box \& Hunter 1962, 1965; Box \& Hill 1967; Box 1976, 1980]}
+%   };
+% \end{tikzpicture}
+% \end{frame}
+
+\begin{frame}
+\frametitle{Box's Loop}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-1cm, yshift=-2.00cm, anchor=north west] at (current page.north west) {
+\includegraphics[width=1.4\textwidth]{img/model_infer_criticize.png}
+  };
+  \node [xshift=3.4cm, yshift=-8.0cm, anchor=north west] at (current page.north west) {
+Edward is a library designed around this loop.
+  };
+  \node [xshift=0cm, yshift=-5.50cm, anchor=north west] at (current page.north west) {
+  };
+  \node [xshift=-4.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Box 1976, 1980; Blei 2014]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+% \begin{frame}
+% \vspace{3ex}
+% \textbf{Edward} is a probabilistic programming language
+% built on TensorFlow.
+
+% \emph{Modeling}
+% \begin{itemize}
+% \item
+% Composable Turing-complete language of random variables.
+% \item
+% Many data types, tensor vectorization, broadcasting, 3rd party support.
+% \item
+% Examples:
+% Graphical models, neural networks, Bayesian nonparametrics.
+% \end{itemize}
+
+% \emph{Inference}
+% \begin{itemize}
+% \item
+% Composable language for hybrids, message passing, data subsampling.
+% \item
+% Infrastructure to develop your own algorithms.
+% \item
+% Examples:
+% Black box VI, stochastic gradient MCMC, ABC.
+% \end{itemize}
+
+% \emph{Criticism}
+% \begin{itemize}
+% \item
+% Examples: Scoring rules, hypothesis tests, predictive checks.
+% \end{itemize}
+
+% \vspace{1ex}
+% Features include autodiff, multi-GPUs, distributed, XLA, quantization.
+
+% \begin{tikzpicture}[remember picture,overlay]
+%   \node [xshift=-3.0cm, yshift=0.4cm, anchor=south west] at (current
+%   page.south east) {
+% \gray{\small [Tran+ 2016, 2017]}
+%   };
+% \end{tikzpicture}
+% \end{frame}
+
+\begin{frame}
+\begin{center}
+\vspace{-2.5ex}
+\includegraphics[width=1.0\textwidth]{img/github.png}
+\\[-1.5ex]
+\includegraphics[width=1.0\textwidth]{img/forum.png}
+\\[-3ex]
+\includegraphics[width=1.0\textwidth]{img/gitter.png}
+\\[2ex]
+\end{center}
+\text{
+We have an active community of several thousand users \& many
+contributors.
+}
+\end{frame}
+
+\begin{frame}
+\frametitle{What impact has Edward had?}
+Designs
+\begin{itemize}
+\item
+% \textbf{D.~Tran}, A.~Kucukelbir, A.~Dieng, M.~Rudolph, D.~Liang, and
+% D.M.~Blei.
+Edward: A library for probabilistic modeling, inference, and criticism.
+\gray{arXiv, 2016.}
+\item
+% \textbf{D.~Tran}, M.D.~Hoffman, R.A.~Saurous, E.~Brevdo, K.~Murphy, and
+% D.M.~Blei.
+Deep probabilistic programming.
+\gray{ICLR, 2017.}
+\item
+Book chapter.
+\gray{arXiv next week, 2017.}
+\end{itemize}
+
+Applications
+\begin{itemize}
+\item
+The variational Gaussian process.
+\gray{ICLR, 2016.}
+\item
+Hierarchical variational models.
+\gray{ICML, 2016.}
+\item
+Exponential family embeddings.
+\gray{NIPS, 2016.}
+\item
+Deep and hierarchical implicit models.
+\gray{NIPS, 2017.}
+\item
+Variational inference via $\chi$-upper bound minimization.
+\gray{NIPS, 2017.}
+\item
+Causal effect inference with deep latent-variable models.
+\gray{NIPS, 2017.}
+\item
+Implicit causal models for genome-wide association studies.
+\gray{arXiv, 2017}
+\item
+% \textbf{D.~Tran} and D.M.~Blei. \\
+Feature-matching auto-encoders.
+\gray{OpenReview, 2017}
+\end{itemize}
+\end{frame}
+
+% \begin{frame}
+% \frametitle{Who is Using Edward?}
+% {\large Users}
+% \begin{enumerate}
+% \item
+% Machine learning enthusiasts, data scientists, business analysts \\
+% (\emph{ex. hierarchical GLMs, mixture models, MAP, MCMC, ...})
+% \item
+% Probabilistic graphical modeling community \\
+% (\emph{ex. latent Dirichlet allocation, variational inference, Gibbs})
+% \item
+% Bayesian deep learning community \\
+% (\emph{ex. deep generative models, Bayesian NNs, black box inference})
+% \end{enumerate}
+
+% {\large Developers}
+% \begin{enumerate}
+% \item
+% David Blei's group
+% \item
+% Google Brain
+% (\emph{design})
+% \item
+% Matt Hoffman (\emph{conjugacy}),
+% Emily Fox's group
+% (\emph{time series + SGMCMC}),
+% Justin Bayer (\emph{stochastic RNNs}),
+% John Pearson (\emph{neuroscience}),
+% a few Master's/Ph.D. students.
+% \item
+% Collaboration continues to evolve. Contact us! (+visit the Forum)
+% \end{enumerate}
+% \end{frame}
+
+\begin{frame}
+\frametitle{Language: Computational Graphs w/ Random Variables}
+Edward's language augments computational graphs with an abstraction
+for random variables.
+Each random variable $\mbx$ is associated to a tensor $\mbx^*$,
+$\mbx^*\sim p(\mbx\g\theta^*)$.
+
+\vspace{-1.0ex}
+\includegraphics[height=0.20\textwidth]{img/random_variables.png}
+
+Unlike \texttt{tf.Tensor}s, \texttt{ed.RandomVariable}s
+carry an explicit density with methods
+such as \texttt{log\_prob()} and \texttt{sample()}.
+
+For implementation, we wrap all TensorFlow Distributions and call
+\texttt{sample} to produce the associated tensor.
+% Mutable states also let random variables condition on values that
+% change, e.g., discriminative models $p(\mby\g\mbx)$ and model
+% parameters $p(\mbx; \theta)$.
+\end{frame}
+
+\begin{frame}
+\frametitle{Language Example}
+\begin{center}
+\includegraphics[width=1.05\textwidth]{img/ssm-program.png}
+\end{center}
+
+\vspace{1ex}
+Edward's language enables a \emph{calculus} on random variables.
+\end{frame}
+
+% \begin{frame}
+% \frametitle{Example: Bayesian neural network for classification}
+% \begin{center}
+% \includegraphics[height=0.3\textwidth]{img/bayesian_nn_graph.png}
+% \\[2.5ex]
+% \includegraphics[height=0.19\textwidth]{img/bayesian_nn_program.png}
+% \end{center}
+% \end{frame}
+
+% \begin{frame}
+% \frametitle{Example: Bayesian recurrent neural network}
+% \begin{center}
+% \includegraphics[height=0.32\textwidth]{img/bayesian_rnn_graph.png}
+% \includegraphics[height=0.32\textwidth]{img/bayesian_rnn_program.png}
+% \end{center}
+% \end{frame}
+
+% \begin{frame}
+% \frametitle{Example: Variational Auto-Encoder for Binarized MNIST}
+% \begin{tikzpicture}[remember picture,overlay]
+%   \node [xshift=0.4cm, yshift=-0.8cm, anchor=north west] at (current page.north west) {
+%    \includegraphics[width=0.5\columnwidth]{img/vae_graphical_model_01.png}
+%   };
+%   \node [xshift=-5.75cm, yshift=0.4cm, anchor=south west] at (current
+%   page.south east) {
+% \gray{\small [Kingma \& Welling 2014; Rezende+ 2014]}
+%   };
+% \end{tikzpicture}
+% \end{frame}
+
+% \begin{frame}
+% \frametitle{Example: Variational Auto-Encoder for Binarized MNIST}
+% \begin{tikzpicture}[remember picture,overlay]
+%   \node [xshift=0.5cm, yshift=-1.0cm, anchor=north west] at (current page.north west) {
+%    \includegraphics[width=0.18\columnwidth]{img/vae_graphical_model.png}
+%   };
+%   \node [xshift=2.6cm, yshift=-1.7cm, anchor=north west] at (current page.north west) {
+% \includegraphics[height=0.14\textheight]{img/vae_decoder.png}
+%   };
+%   \node [xshift=2.6cm, yshift=-5.8cm, anchor=north west] at (current page.north west) {
+% \includegraphics[height=0.18\textheight]{img/vae_encoder.png}
+%   };
+%   \node [xshift=-5.75cm, yshift=0.4cm, anchor=south west] at (current
+%   page.south east) {
+% \gray{\small [Kingma \& Welling 2014; Rezende+ 2014]}
+%   };
+% \end{tikzpicture}
+% \end{frame}
+
+% \begin{frame}
+% \frametitle{Inference as Stochastic Graph Optimization}
+% Given
+% \begin{itemize}
+% \item Data $\mbx_{\text{train}}$.
+% \item
+% Model $p(\mbx, \mbz, \mbbeta)$ of
+% observed variables $\mbx$ and latent variables $\mbz, \mbbeta$.
+% \end{itemize}
+% Goal
+% \begin{itemize}
+% \item
+% Calculate posterior distribution
+% \begin{equation*}
+% p(\mbz, \mbbeta\mid\mbx_{\text{train}}) =
+% \frac{p(\mbx_{\text{train}}, \mbz, \mbbeta)}{\int
+% p(\mbx_{\text{train}}, \mbz, \mbbeta) \d\mbz\d\mbbeta}.
+% \end{equation*}
+% \end{itemize}
+% \vspace{2ex}
+% This is the key problem in Bayesian inference.
+% \begin{tikzpicture}[remember picture,overlay]
+%   \node [xshift=-4.5cm, yshift=0.4cm, anchor=south west] at (current
+%   page.south east) {
+% \small \url{edwardlib.org/tutorials}
+%   };
+% \end{tikzpicture}
+% \end{frame}
+
+\begin{frame}
+\frametitle{Inference as Stochastic Graph Optimization}
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{img/inference-graph.png}
+\end{center}
+
+All \texttt{Inference} has (at least) two inputs: \\
+\begin{enumerate}
+\vspace{-3ex}
+\item
+\red{red} aligns latent variables and posterior approximations;
+\item
+\blue{blue} aligns observed variables and realizations.
+\end{enumerate}
+
+\begin{center}
+\vspace{-2.0ex}
+\includegraphics[height=0.05\textheight]{img/inference.png}
+\end{center}
+
+\texttt{Inference} has class methods to finely control the algorithm.
+\end{frame}
+
+\begin{frame}
+\frametitle{Edward == handwritten TensorFlow at runtime}
+\begin{center}
+\includegraphics[width=0.85\textwidth]{img/experiments_hmc.png}
+\end{center}
+\vspace{-1ex}
+Run HMC for 100 iterations and fixed hyperparameters.
+
+Bayesian logistic regression for Covertype ($581012$ data points, $54$
+features).
+
+12-core Intel i7-5930K CPU at 3.50GHz and NVIDIA Titan X (Maxwell) GPU.
+Single precision.
+
+\vspace{4ex}
+\textbf{Edward is orders of magnitude faster than existing software
+for large data.}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-2cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\gray{\small [Tran+ 2017]}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Composable \& Hybrid Inference}
+
+\begin{center}
+\vspace{-2ex}
+\includegraphics[width=1.0\textwidth]{img/em.png}
+\vspace{2ex}
+
+\includegraphics[width=1.0\textwidth]{img/ep.png}
+% Composable inference (expectation propagation)
+\end{center}
+
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-8.0cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\small \url{edwardlib.org/api/inference-compositionality}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Non-Bayesian Inference}
+\begin{center}
+\vspace{-2ex}
+\includegraphics[width=1.0\textwidth]{img/gan_example.png}
+\end{center}
+\begin{tikzpicture}[remember picture,overlay]
+  \node [xshift=-6.5cm, yshift=0.4cm, anchor=south west] at (current
+  page.south east) {
+\small \url{edwardlib.org/api/inference-classes}
+  };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+{\Large\bf Some Cool Ideas}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Against the ``Program -> Query'' Modality}
+\begin{enumerate}
+\item
+Unlike other PPLs, \textbf{Edward has no explicit ``model'' or ``inference''
+block}: \\
+A model is simply a collection of random variables in the graph.  \\
+Inference specifies how to modify parameters in that
+collection subject to another.
+
+This offers significant flexibility: we can
+% With conditional inference,
+% we can simultaneously run updates over multiple algorithms like
+% \Cref{fig:alignment} but over different alignments.
+\emph{infer only parts of a model} (e.g.,
+layer-wise training),
+\emph{infer parts used in multiple models}
+(e.g., multi-task learning), or
+\emph{plug in a posterior into a new model}
+(e.g., Bayesian updating).
+\item
+Unlike other PPLs, \textbf{Edward has no \texttt{observe} operator}, which is called
+before an \texttt{infer} operation.
+% unlike church-like langs which use a condition/observe operator, pymc3, stan compilation, and even modern ppls like pyro
+% random variables are not tied to observations.
+Each \texttt{Inference} can specify its own alignment of random
+variables and observations.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[plain,t]
+\frametitle{Implicit Models (\& Likelihood-Free Inference)}
+\begin{center}
+\includegraphics[width=0.6\textwidth]{img/lotka_volterra_plot.png}
+\end{center}
+
+\begin{center}
+\includegraphics[width=1.0\textwidth]{img/lotka_volterra_program.png}
+\end{center}
+\texttt{tf.Tensors} implicitly carry densities. We can infer (approximate)
+them via \texttt{Inference}.
+\end{frame}
+
+\begin{frame}
+\frametitle{Dynamic Stochasticity}
+Parameter shapes can be stochastic.
+
+\begin{center}
+\hspace{-11em}
+\vspace{-1.0ex}
+\includegraphics[width=0.7\textwidth]{img/poisson.png}
+\end{center}
+
+Event shapes can be stochastic.
+
+\begin{center}
+\vspace{-0.5ex}
+\includegraphics[width=1.0\textwidth]{img/dirichlet.png}
+\vspace{-2ex}
+\end{center}
+
+Control flow can be stochastic.
+
+\begin{center}
+\vspace{-0.5ex}
+\includegraphics[width=1.0\textwidth]{img/geometric.png}
+\vspace{-2ex}
+\end{center}
+
+No recursion. Must be rewritten as a (stochastic) while loop.
+We implemented a DirichletProcess this way.
+% + no recursion; must express via while loop
+\end{frame}
+
+\begin{frame}
+\frametitle{Taxonomy of Inference}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{img/taxonomy.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Compiler Connections}
+Recall Edward interprets inference as stochastic graph optimization.
+
+This may have deep implication to extend compiler optimization with
+probability(?).
+Examples:
+\begin{enumerate}
+\item
+\textbf{Operation fusion to marginalization.}
+% GPU kernels are memory-bound. Fusing kernels allows kernels
+% to share data and reduce traffic to off-chip memory.
+% The equivalent operation for two stochastic kernels is
+% marginalization.
+Fusing two stochastic nodes into one corresponds to computing the
+marginal density.
+(E.g., turn naive Monte Carlo sample to exact normal-normal compound density.)
+\item
+\textbf{Common subexpression elimination to common distribution
+elimination.}
+Suppose a graph involves compiling two subgraphs which
+are approximately equal in distributions. Avoid compiling them
+separately.
+\item
+\textbf{Amortized inference as ahead-of-time compilation.}
+Training can amortize inference over data generated from the model; no
+data need be involved until runtime.
+\end{enumerate}
+These are half-baked, experimental ideas. Worth more investigation.
+\end{frame}
+
+\begin{frame}
+\frametitle{Exploiting Graphs: Conditional Independence}
+
+\begin{center}
+\vspace{-2ex}
+\includegraphics[height=0.175\textwidth]{img/beta-bernoulli.png}
+\end{center}
+
+Edward writes all programs as part of the computational graph.
+This lets us exploit graph structure.
+One powerful application is conditional independence.
+
+\begin{itemize}
+\item
+Edward can query a random variable for its parents,
+ancestors, children, and Markov blanket.
+\item
+Edward uses Bayes-Ball to assess conditional independence of two
+nodes given a third set of nodes.
+\item
+Operators for causal graphs (e.g., backdoor criterion) are also
+possible.
+\end{itemize}
+Why is this important? Conditional independence is fundamental to
+distributed inference by enabling parallel, concurrent computation.
+% Fetching $\mbx$ from the graph generates a binary vector of $50$ elements.
+\end{frame}
+
+\begin{frame}
+\frametitle{Exploiting Graphs: Symbolic Algebra}
+We can exploit graphs not just in the graph structure but in the
+symbolic operations.
+
+This enables a \texttt{complete\_conditional} function. Basically it:
+\begin{enumerate}
+\item
+Take a random variable's Markov blanket; then take the log joint.
+\item
+Simplify the log joint into a set of sufficient statistic and natural
+parameter pairs.
+\item
+Perform a table lookup to find the distribution corresponding to those
+sufficient statistics.
+\end{enumerate}
+
+Why is this important?
+It is core to Edward's \texttt{Gibbs} and VI with natural gradients.
+\end{frame}
+
+% \begin{frame}
+% \frametitle{Ongoing Directions}
+
+% We are extending Edward's design.
+% \begin{enumerate}
+% \item
+% Integration with a probabilistic intermediate representation
+% (BayesFlow).
+% \item
+% TPUs \& XLA.
+% \item
+% Distributed probabilistic programming.
+% % \item
+% % A one-line API for loading standard data sets in machine learning.
+% \end{enumerate}
+% \vspace{3ex}
+
+% We are applying Edward for AI and scientific research.
+% \begin{enumerate}
+% \item
+% Causal models for genome wide association studies.
+% \item
+% Alignment \& semi-supervised learning in text.
+% \end{enumerate}
+% \end{frame}
+
+% \begin{frame}[t]
+% \frametitle{Example: Variational Auto-Encoder for Binarized MNIST}
+% \vspace{5ex}
+% \begin{center}
+% \includegraphics[width=0.975\textwidth]{img/vae_example.png}
+% \end{center}
+% \end{frame}
+
+% \begin{frame}[t]
+% \frametitle{Example: Variational Auto-Encoder for Binarized MNIST}
+% \vspace{2.5ex}
+% \begin{center}
+% \includegraphics[width=1.05\textwidth]{img/vae_example_hmc.png}
+% \end{center}
+% \end{frame}
+
+\begin{frame}
+\frametitle{Limitations}
+\begin{itemize}
+\item
+\textbf{Graph copying} is a key function to all Edward's inferences. It's a
+cognitive PITA, carries graph junk, and hides computation from users.
+% \item
+% + can't get more fine-grained detail for single node operations, e.g.,
+% rao-blackwellization, EP when representing one RV node for batch
+\item
+\textbf{Object-oriented inference} has a high cognitive burden. Arguably no one
+except me understands it enough to exploit.
+\item
+Certain models, such as autoregressive distributions, are easier to
+\textbf{build the loss} (log prob) than it is to build the generative program.
+\item
+\textbf{Programmable inference is hard}. Matt and I thought hard about
+use cases. But we didn't cover all of them. Ex: gradient clipping,
+registering specific inference ops to devices.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Questions}
+\begin{itemize}
+\item
+Edward's biggest competitor is not an existing PPL, but TensorFlow itself.
+% Integration with a probabilistic intermediate representation
+% (BayesFlow).
+% \red{How do we refactor Edward to use our new
+% intermediate representation?}
+
+% \red{Rather than start from statistics where computation is induced
+% by statistical queries, can we start from the bottom-up
+% (``computation-first'')?}
+\red{Rather than start from universal PPLs and bend backwards to
+support programmable inference, can we take a
+\textbf{computation-first}
+approach?}
+% \item
+% \red{How can Edward support TPUs \& XLA?}
+\item
+Edward is limited to single machine.
+
+\red{How do we scale probabilistic programming to
+\textbf{multi-machine}
+environments with billions of data points?}
+\item
+Our \textbf{symbolic algebra} works on only toy problems and requires
+TensorFlow graph introspection.
+
+\red{Can we pursue this at the XLA graph level?}
+\item
+Our ICLR paper proposed a \textbf{model zoo}. The idea is to
+go beyond Stan's model examples to also include
+inference algs, tuned hyperparameters, and pre-training.
+It never took off.
+
+\red{How do we make it usable?}
+\end{itemize}
+\end{frame}
+
+\end{document}
